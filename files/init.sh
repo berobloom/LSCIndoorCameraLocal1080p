@@ -28,14 +28,6 @@ reboot_proc () {
     exit 1
 }
 
-# Cleanup /etc/conf
-echo "Cleanup /etc/conf..."
-rm -rf /etc/conf/Config \
-       /etc/conf/tuya \
-       /etc/conf/reboot.log \
-       /etc/conf/custom \
-       /etc/conf/product.cof
-
 # Check for SD Card
 echo "Check for sd card..."
 if [[ -e "${SDCARD_DEV}" ]]
@@ -137,6 +129,6 @@ ${MKFIFO} /tmp/log
 ${REREDIRECT} -m /tmp/log ${DGIOT_PID} > /tmp/redir.log
 
 # Start HTTPD Server
-BASE64_CREDENTIALS=$(${BASE64} "${HTTP_USER}:${HTTP_PASS}")
+BASE64_CREDENTIALS=$(echo "${HTTPD_USER}:${HTTPD_PASS}" | ${BASE64})
 echo "/${BASE64_CREDENTIALS}" > "${WEB_DIR}/httpd.conf"
 ${HTTPD} -c "${WEB_DIR}/httpd.conf" -h "${WEB_DIR}" -p ${WEB_PORT}

@@ -78,6 +78,7 @@ Ubuntu 22.04 LTS host (Physical/virtual)
 
 * `binwalk`
 * `screen`
+* `xz-utils`
 
 ## Modifying the Camera
 
@@ -373,8 +374,7 @@ Reboot the camera after changing these settings.
 * Write a custom p2p TUTK client with an RTSP Server
 * Patch the application binary to set up credentials dynamically
 * Patch nightvision
-* Patching out internal motion detection
-  * Seems the camera has some inbuilt motion detection running
+* ~~Patching out internal motion detection~~ [Done]
 
 ## Contribute
 
