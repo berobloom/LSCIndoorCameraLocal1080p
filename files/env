@@ -1,0 +1,5 @@
+export TZ=CEST-2
+export TIMESERVER=ntp1.hetzner.de
+export SKIPTIME=false
+export HTTPD_USER=nobody
+export HTTPD_PASS=nobody
