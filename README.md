@@ -120,7 +120,7 @@ Connect the camera to the serial:
 
 If everything is connected, insert your USB TTY into your host.
 
-Test the serial by opening a terminal as `root` and use the following command to set up a serial connection to the camera:
+Test the serial by opening a terminal and enter the following commands to set up a serial connection to the camera:
 
 ```
 cd "${WORKING_DIR}"
