@@ -205,7 +205,7 @@ There is a motion detector running in the background. It will output if there is
 Check the sha256sum of: `_fulldump.bin.extracted/squashfs-root/usr/bin/dgiot`:
 
 ```
-sha256 _fulldump.bin.extracted/squashfs-root/usr/bin/dgiot
+sha256sum _fulldump.bin.extracted/squashfs-root/usr/bin/dgiot
 ```
 
 It should output the following hash. Only when the hash has matched with your `dgiot` binary you can continue.
