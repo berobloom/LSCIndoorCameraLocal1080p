@@ -288,7 +288,7 @@ mw.b ${baseaddr} 0xff ${flashsize}
 loady ${baseaddr}
 ```
 
-Press `CTRL-a` followed by:  `:`
+Press `CTRL-a` followed by:  `:`.
 
 Enter the following command and press `Enter` to flash `fullmod.bin`.
 
@@ -329,11 +329,11 @@ Congratulations! You have modified the LSC Indoor Camera 1080P.
 
 ## Nightvision
 
-Nightvision is default set to auto with the following variable in `product.cof`. 
+Nightvision is default set to automatic with the following variable in `product.cof`. 
 ```
 smartir_en=1
 ```
-When you want manual automation:
+When you want manual nightvision:
 
 ```
 smartir_en=0
