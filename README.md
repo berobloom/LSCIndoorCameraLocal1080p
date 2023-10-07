@@ -202,7 +202,11 @@ In my setup the squashfs starts at block `2490368`. We need this number when rec
 
 There is a motion detector running in the background. It will output if there is some motion going on. Normally the tuya stack takes care of this motion. We can patch this out.
 
-Check the sha256sum of `_fulldump.bin.extracted/squashfs-root/usr/bin/dgiot`
+Check the sha256sum of: `_fulldump.bin.extracted/squashfs-root/usr/bin/dgiot`:
+
+```
+sha256 _fulldump.bin.extracted/squashfs-root/usr/bin/dgiot
+```
 
 It should output the following hash. Only when the hash has matched with your `dgiot` binary you can continue.
 
