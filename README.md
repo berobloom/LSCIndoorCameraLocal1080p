@@ -198,13 +198,17 @@ In my setup the squashfs starts at block `2490368`. We need this number when rec
 
 ⚠️ Don't use this number if this is not equal to yours!! ⚠️. When in doubt, you can contact me.
 
-### 7. Patch application
+### 7. Patch dgiot application
 
-There is an motion detection running on the background. It will output if there is some motion going on. Normally the tuya stack takes care of this motion. We can patch this out.
+There is a motion detector running in the background. It will output if there is some motion going on. Normally the tuya stack takes care of this motion. We can patch this out.
 
 Check the sha256sum of `_fulldump.bin.extracted/squashfs-root/usr/bin/dgiot`
 
 It should output the following hash. Only when the hash has matched with your `dgiot` binary you can continue.
+
+```
+6414cf6fd457634e3b0ed62a584a2077632b85c59d14f1d843c85b389a80d96a  dgiot
+```
 
 Patch `_fulldump.bin.extracted/squashfs-root/usr/bin/dgiot` with `files/dgiot_patch.ips` using either 
 
@@ -213,10 +217,6 @@ Patch `_fulldump.bin.extracted/squashfs-root/usr/bin/dgiot` with `files/dgiot_pa
 or
 
 * https://www.romhacking.net/utilities/240/
-
-```
-6414cf6fd457634e3b0ed62a584a2077632b85c59d14f1d843c85b389a80d96a  dgiot
-```
 
 ### 8. Copy and edit files
 
