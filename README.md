@@ -346,11 +346,11 @@ Reboot the camera after changing these settings.
 
 ## Things to do
 
-* Write a custom p2p TUTK client with an RTSP Server.
+* Write a custom p2p TUTK client with an RTSP Server
 * Patch the application binary to set up credentials dynamically
 * Patch nightvision
 * Patching out internal motion detection
-  * Seems the camera has some inbuilt motion detection running.
+  * Seems the camera has some inbuilt motion detection running
 
 ## Contribute
 
