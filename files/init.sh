@@ -38,14 +38,11 @@ rm -rf /etc/conf/Config \
 
 # Check for SD Card
 echo "Check for sd card..."
-if ! mount | ${GREP} -q mmcblk0p1
+if [[ -e "${SDCARD_DEV}" ]]
 then
-    if [[ -f "${SDCARD_DEV}" ]]
-    then
-        mount "${SDCARD_DEV}" "${SDCARD_DIR}"
-    else
-        reboot_proc "Could not find sd card"
-    fi
+    mount "${SDCARD_DEV}" "${SDCARD_DIR}"
+else
+    reboot_proc "Could not find sd card"
 fi
 
 # Check for product.cof
