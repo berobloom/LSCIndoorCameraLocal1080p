@@ -198,7 +198,27 @@ In my setup the squashfs starts at block `2490368`. We need this number when rec
 
 ⚠️ Don't use this number if this is not equal to yours!! ⚠️. When in doubt, you can contact me.
 
-### 7. Copy and edit files
+### 7. Patch application
+
+There is an motion detection running on the background. It will output if there is some motion going on. Normally the tuya stack takes care of this motion. We can patch this out.
+
+Check the sha256sum of `_fulldump.bin.extracted/squashfs-root/usr/bin/dgiot`
+
+It should output the following hash. Only when the hash has matched with your `dgiot` binary you can continue.
+
+Patch `_fulldump.bin.extracted/squashfs-root/usr/bin/dgiot` with `files/dgiot_patch.ips` using either 
+
+* https://www.marcrobledo.com/RomPatcher.js/
+
+or
+
+* https://www.romhacking.net/utilities/240/
+
+```
+6414cf6fd457634e3b0ed62a584a2077632b85c59d14f1d843c85b389a80d96a  dgiot
+```
+
+### 8. Copy and edit files
 
 Copy the files from this repo to the following locations:
 
@@ -246,7 +266,7 @@ else
 fi
 ```
 
-### 8. Recreate squashfs
+### 9. Recreate squashfs
 
 Recreate the squashfs as follows:
 
@@ -255,7 +275,7 @@ cd _fulldump.bin.extracted/
 mksquashfs squashfs-root/ rootmod -comp xz
 ```
 
-### 9. Merge squashfs with the full backup
+### 10. Merge squashfs with the full backup
 
 Prepare file dump for modification:
 
@@ -273,7 +293,7 @@ dd if=rootmod of=fullmod.bin conv=notrunc bs=1 seek=2490368
 
 We now have a modified binary that is ready to flash.
 
-### 10. Flashing the modified .bin Using Loady
+### 11. Flashing the modified .bin Using Loady
 
 UBoot has a command to copy data from a host using a serial connection. This is the method I used. You can also flash the modified binary using an MicroSD card. I did not include instructions for that.
 
@@ -317,13 +337,13 @@ If the camera is constantly rebooting, check the following:
 * `stationssid` and `stationpwd` in product.cof
 * If `SKIP_TIME` is set to `false` make sure that the camera has WiFi access and you have entered a reachable timeserver. You can change time settings in the `env` file on the MicroSD card.
 
-### 11. Install TinyCam
+### 12. Install TinyCam
 
 Install TinyCam on an Android device or use Android X86 to install TinyCam
 
 When adding a camera, select the `Scan network` option and if the Android device and the camera are on the same network, the UID shall pop up automatically. Add the camera and use the password: `123456`
 
-### 12. End
+### 13. End
 
 Congratulations! You have modified the LSC Indoor Camera 1080P.
 

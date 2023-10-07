@@ -137,6 +137,6 @@ ${MKFIFO} /tmp/log
 ${REREDIRECT} -m /tmp/log ${DGIOT_PID} > /tmp/redir.log
 
 # Start HTTPD Server
-BASE64_CREDENTIALS="$(${BASE64 }${HTTP_USER}:${HTTP_PASS})"
+BASE64_CREDENTIALS=$(${BASE64} "${HTTP_USER}:${HTTP_PASS}")
 echo "/${BASE64_CREDENTIALS}" > "${WEB_DIR}/httpd.conf"
 ${HTTPD} -c "${WEB_DIR}/httpd.conf" -h "${WEB_DIR}" -p ${WEB_PORT}
