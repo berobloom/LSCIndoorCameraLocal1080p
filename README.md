@@ -27,7 +27,7 @@ When placing a `product.cof` file on the SD Card with `stationssid` and `station
 * Video streaming
 * Audio streaming
 * Recordings
-* Motion detecion
+* Motion detection
 * Manual nightvision (Custom Web API endpoint)
   * \<camera_address>:/cgi-bin/ir-on.cgi
   * \<camera_address>:/cgi-bin/ir-off.cgi
