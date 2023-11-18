@@ -14,7 +14,7 @@ fi
 
 if pgrep "${MEDIAMTX_BIN}" >/dev/null
 then
-  echo "Go2RTC is already running"
+  echo "Mediamtx is already running"
   exit 1
 fi
 
