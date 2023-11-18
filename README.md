@@ -342,23 +342,46 @@ If the camera is constantly rebooting, check the following:
 * `stationssid` and `stationpwd` in product.cof
 * If `SKIP_TIME` is set to `false` make sure that the camera has WiFi access and you have entered a reachable timeserver. You can change time settings in the `env` file on the MicroSD card.
 
-### 12. Install TinyCam
+### 12. Usage method 1: TinyCam
 
 Install TinyCam on an Android device or use Android X86 to install TinyCam
 
-When adding a camera, select the `Scan network` option and if the Android device and the camera are on the same network, the UID shall pop up automatically. Add the camera and use the password: `123456`
+When adding a camera, select the `Scan network` option and if the Android device and the camera are on the same network, the UID shall pop up automatically. Add the camera and use the password: `123456`.
 
-### 13. End
+TinyCam can be used to restream. The Android device will then act as an NVR.
+
+### 14: Usage method 2: Standalone (Work In Progress)
+
+Another method is a standalone proxy that will read streams from the camera using the tutk client library and resend them using rtsp. Prebuild files for this proxy can be found in: `LSCProxy` folder.
+
+You can run the proxy using `./start_stream.sh`.
+
+Current requirements:
+
+* Linux (X86/Amd64)
+* Default camera credentials
+  * p2p user: `admin`
+  * p2p password: `123456`
+  * UID as environment variable
+
+Will finish this project and upload the source later.
+
+
+### 15. End
 
 Congratulations! You have modified the LSC Indoor Camera 1080P.
 
 ## Nightvision
 
+### Auto
+
 Nightvision is default set to automatic with the following variable in `product.cof`. 
 ```
 smartir_en=1
 ```
-When you want manual nightvision:
+### Manual (Deprecated)
+
+Note: I found out nightvision can be managed using the tutk library. Will add this to the proxy later.
 
 ```
 smartir_en=0
@@ -371,7 +394,8 @@ Reboot the camera after changing these settings.
 
 ## Things to do
 
-* Write a custom p2p TUTK client with an RTSP Server
+* [**WIP**] Write a custom p2p TUTK client with an RTSP Server
+  * First draft of the proxy has been added to `LSCProxy` folder
 * Patch the application binary to set up credentials dynamically
 * Patch nightvision
 * ~~Patching out internal motion detection~~ [Done]
@@ -389,3 +413,5 @@ Let me know if there are any improvements or other ideas. They are very welcome.
 
 1. https://github.com/guino/LSC1080P
 2. https://github.com/OpenIPC/wiki/blob/master/en/help-uboot.md
+3. https://www.sunipcam.com/sdk/UserManual/APIRefGuide/
+4. https://github.com/taishanmayi/tutk_test.git
