@@ -350,7 +350,7 @@ When adding a camera, select the `Scan network` option and if the Android device
 
 TinyCam can be used to restream. The Android device will then act as an NVR.
 
-### 14: Usage method 2: Standalone (Work In Progress)
+### 13: Usage method 2: Standalone (Work In Progress)
 
 Another method is a standalone proxy that will read streams from the camera using the tutk client library and resend them using rtsp. Prebuild files for this proxy can be found in: `LSCProxy` folder.
 
@@ -367,7 +367,7 @@ Current requirements:
 Will finish this project and upload the source later.
 
 
-### 15. End
+### 14. End
 
 Congratulations! You have modified the LSC Indoor Camera 1080P.
 
