@@ -9,6 +9,7 @@ AV_FIFO="av_fifo"
 if [[ ! -n "${CAMERA_UID}" ]] 
 then
   echo "UID environment variable not set"
+  exit 1
 fi
 
 if pgrep "${MEDIAMTX_BIN}" >/dev/null
