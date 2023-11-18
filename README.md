@@ -363,6 +363,7 @@ Current requirements:
   * p2p user: `admin`
   * p2p password: `123456`
   * UID as environment variable
+* FFmpeg
 
 Will finish this project and upload the source later.
 
