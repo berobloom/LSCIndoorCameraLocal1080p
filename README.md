@@ -398,13 +398,12 @@ Reboot the camera after changing these settings.
 * Write a custom p2p TUTK client with an RTSP Server [WIP] 
   * First draft of the proxy has been added to `LSCProxy` folder
 * Patch the application binary to set up credentials dynamically
-* Patch nightvision
+* Write API for TUTK managed nightvision
 * ~~Patching out internal motion detection~~ [Done]
 
 ## Contribute
 
 Let me know if there are any improvements or other ideas. They are very welcome.
-
 
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EMTRTL76B3BFG">
   <img src="https://raw.githubusercontent.com/stefan-niedermann/paypal-donate-button/master/paypal-donate-button.png" height=80px alt="Donate with PayPal" />
