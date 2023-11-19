@@ -494,8 +494,8 @@ void *thread_ConnectCCR(void *arg)
 	}
 
 	// Close unused pipe ends
-    close(video_pipe_fd);
-    close(audio_pipe_fd);
+	close(video_pipe_fd);
+	close(audio_pipe_fd);
 	
 	kill(ffmpeg_pid, SIGKILL);
 	
