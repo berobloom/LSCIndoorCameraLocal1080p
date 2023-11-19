@@ -4,7 +4,6 @@ TUTK_BIN="tutk_client"
 MEDIAMTX_BIN="mediamtx"
 VIDEO_FIFO="video_fifo"
 AUDIO_FIFO="audio_fifo"
-AV_FIFO="av_fifo"
 
 if [[ ! -n "${CAMERA_UID}" ]] 
 then
@@ -32,11 +31,6 @@ fi
 if [[ ! -p "${AUDIO_FIFO}" ]]
 then
   mkfifo "${AUDIO_FIFO}"
-fi
-
-if [[ ! -p "${AV_FIFO}" ]]
-then
-  mkfifo "${AV_FIFO}"
 fi
 
 arch=`getconf LONG_BIT`
