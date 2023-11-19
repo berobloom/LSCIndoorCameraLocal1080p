@@ -365,9 +365,6 @@ Current requirements:
   * UID as environment variable
 * FFmpeg
 
-Will finish this project and upload the source later.
-
-
 ### 14. End
 
 Congratulations! You have modified the LSC Indoor Camera 1080P.
