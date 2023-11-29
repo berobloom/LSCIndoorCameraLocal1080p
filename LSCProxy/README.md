@@ -42,3 +42,7 @@ python main.py <UID>
 ## License
 
 This script is released under the [BOLA License](LICENSE).
+
+## Sources
+
+* https://github.com/ErikMcClure/bad-licenses/blob/master/BOLA-License
