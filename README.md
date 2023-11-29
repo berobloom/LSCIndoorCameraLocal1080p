@@ -409,6 +409,10 @@ Let me know if there are any improvements or other ideas. They are very welcome.
   <img src="https://raw.githubusercontent.com/stefan-niedermann/paypal-donate-button/master/paypal-donate-button.png" height=80px alt="Donate with PayPal" />
 </a>
 
+## License
+
+This software is released under the [BOLA License](LICENSE).
+
 ## Sources:
 
 1. https://github.com/guino/LSC1080P
@@ -416,3 +420,4 @@ Let me know if there are any improvements or other ideas. They are very welcome.
 3. https://www.sunipcam.com/sdk/UserManual/APIRefGuide/
 4. https://github.com/taishanmayi/tutk_test.git
 5. https://github.com/bluenviron/mediamtx
+6. https://github.com/ErikMcClure/bad-licenses/blob/master/BOLA-License

@@ -41,7 +41,7 @@ python main.py <UID>
 
 ## License
 
-This script is released under the [BOLA License](LICENSE).
+This software is released under the [BOLA License](LICENSE).
 
 ## Sources
 
