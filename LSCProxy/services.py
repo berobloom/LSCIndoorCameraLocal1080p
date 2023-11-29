@@ -65,6 +65,7 @@ class Process():
         self.process_object = process_object
         self.pid = None
 
+
     def start(self):
         """
         Start the specified process.
@@ -93,6 +94,7 @@ class Process():
         else:
             print("Cannot start process. No process object has been given")
 
+
     def stop(self):
         """
         Stop the running process.
@@ -110,17 +112,20 @@ class RTSPServer():
         self.command = [MEDIAMTX_PATH, "rtsp/mediamtx.yml"]
         self.process = Process(self)
 
+
     def start(self):
         """
         Start the RTSP server process.
         """
         self.process.start()
 
+
     def stop(self):
         """
         Stop the RTSP server process.
         """
         self.process.stop()
+
 
     def get_pid(self):
         """
@@ -154,17 +159,20 @@ class FFMPEG():
         ]
         self.process = Process(self)
 
+
     def start(self):
         """
         Start the FFMPEG process.
         """
         self.process.start()
 
+
     def stop(self):
         """
         Stop the FFMPEG process.
         """
         self.process.stop()
+
 
     def get_pid(self):
         """
