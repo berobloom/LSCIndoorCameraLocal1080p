@@ -133,6 +133,7 @@ def ioctrl_enable_hd_quality(tutk):
     return status
 
 
+
 def ioctrl_start_camera(tutk):
     """
     Start the camera through AVIOCTRL.
@@ -167,6 +168,7 @@ def ioctrl_start_audio(tutk):
     status = tutk.av_send_ioctrl(IOTYPE_USER_IPCAM_AUDIOSTART, io_audio)
 
     return status
+
 
 def start_ipcam_stream(tutk):
     """
@@ -248,6 +250,7 @@ def receive_audio(tutk):
     os.close(audio_pipe_fd)
     print("[receive_audio] thread exit")
 
+
 def receive_video(tutk):
     """
     Receive and playback video data from the IPCAM stream.
@@ -293,6 +296,7 @@ def receive_video(tutk):
     os.close(video_pipe_fd)
     print("[receive_video] thread exit")
 
+
 def clean_buffers(tutk):
     """
     Periodically clean video and audio buffers.
@@ -305,6 +309,7 @@ def clean_buffers(tutk):
         tutk.clean_video_buf()
         time.sleep(30)
         tutk.clean_audio_buf()
+
 
 def thread_connect_ccr(tutk):
     """

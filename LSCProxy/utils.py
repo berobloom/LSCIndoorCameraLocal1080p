@@ -8,6 +8,7 @@ Note: This module uses the 'time' module.
 """
 import time
 
+
 def usleep(u_seconds):
     """
     Sleep for a specified duration in microseconds.

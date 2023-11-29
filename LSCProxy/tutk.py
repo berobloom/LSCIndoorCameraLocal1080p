@@ -55,12 +55,14 @@ class SMsgAVIoctrlSetVideoModeReq(ctypes.Structure):
     _fields_ = [("channel", ctypes.c_uint),
                 ("mode", ctypes.c_uint)]
 
+
 class SMsgAVIoctrlSetStreamCtrlReq(ctypes.Structure):
     """
     Structure for setting stream control through IOCTRL.
     """
     _fields_ = [("channel", ctypes.c_uint),
                 ("quality", ctypes.c_uint)]
+
 
 class SMsgAVIoctrlAVStream(ctypes.Structure):
     """
@@ -70,6 +72,7 @@ class SMsgAVIoctrlAVStream(ctypes.Structure):
         ("channel", ctypes.c_uint),
         ("reserved", ctypes.c_ubyte * 4),
     ]
+
 
 class FrameInfoT(ctypes.Structure):
     """
@@ -86,6 +89,7 @@ class FrameInfoT(ctypes.Structure):
         ("videoWidth", ctypes.c_uint),
         ("videoHeight", ctypes.c_uint),
     ]
+
 
 class Tutk():
     """
@@ -198,17 +202,20 @@ class Tutk():
         """
         self.iot.avClientExit(self.session_id, self.av_index)
 
+
     def av_client_stop(self):
         """
         Stop the TUTK AV client.
         """
         self.iot.avClientStop(self.av_index)
 
+
     def iotc_session_close(self):
         """
         Close the TUTK IoT session.
         """
         self.iot.IOTC_Session_Close(self.session_id)
+
 
     def av_send_ioctrl(self, iotype_command, struct):
         """
@@ -231,6 +238,7 @@ class Tutk():
 
         return True
 
+
     def av_initialize(self, max_num_allowed):
         """
         Initialize the TUTK AV library.
@@ -240,6 +248,7 @@ class Tutk():
         """
         self.iot.avInitialize(max_num_allowed)
 
+
     def iotc_de_initialize(self):
         """
         Deinitialize the TUTK IoT and AV libraries.
@@ -247,11 +256,13 @@ class Tutk():
         self.iot.avDeInitialize()
         self.iot.IOTC_DeInitialize()
 
+
     def clean_audio_buf(self):
         """
         Clean the TUTK audio buffer.
         """
         self.iot.avClientCleanAudioBuf(self.av_index)
+
 
     def clean_video_buf(self):
         """
@@ -307,6 +318,7 @@ class Tutk():
             print(f"avClientStart2 failed[{self.av_index}]")
             sys.exit(1)
 
+
     def create_buf(self, buf_size):
         """
         Create a buffer of a specified size.
@@ -319,6 +331,7 @@ class Tutk():
         """
         buf = ctypes.create_string_buffer(buf_size)
         return buf
+
 
     def av_recv_framedata2(self, buf, buf_size):
         """
@@ -340,6 +353,7 @@ class Tutk():
                                     ctypes.byref(self.video_frm_no))
         return status
 
+
     def av_recv_audio_data(self, buf, buf_size):
         """
         Receive audio data from the TUTK device.
@@ -357,6 +371,7 @@ class Tutk():
                                             self.audio_out_frm_info_size,
                                             self.audio_frm_no)
         return status
+
 
     def av_check_audio_buf(self):
         """

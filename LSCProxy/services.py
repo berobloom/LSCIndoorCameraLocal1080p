@@ -1,8 +1,8 @@
 """
 services.py
 
-This script manages external processes, specifically an RTSP server (mediamtx) 
-and an FFMPEG process. It provides classes for Process, RTSPServer, 
+This script manages external processes, specifically an RTSP server (mediamtx)
+and an FFMPEG process. It provides classes for Process, RTSPServer,
 and FFMPEG, allowing the start and stop of these processes.
 
 Classes:
@@ -35,7 +35,7 @@ Usage:
     Modify the attributes and command parameters as needed for the specific external processes.
     Run this script to start and stop the RTSP server and FFMPEG processes.
 
-Note: Ensure that the required external binaries (mediamtx, ffmpeg) 
+Note: Ensure that the required external binaries (mediamtx, ffmpeg)
 are available in the system PATH.
 """
 import subprocess
@@ -47,6 +47,7 @@ import os
 AUDIO_FIFO_PATH = pathlib.Path().absolute() / "fifos/audio_fifo"
 VIDEO_FIFO_PATH = pathlib.Path().absolute() / "fifos/video_fifo"
 MEDIAMTX_PATH = pathlib.Path().absolute() / "rtsp/mediamtx"
+
 
 class Process():
     """
@@ -143,12 +144,12 @@ class FFMPEG():
         self.name = "ffmpeg"
         self.command = [
             self.name, "-re", "-hide_banner",
-            "-thread_queue_size", "4096", "-f", "s16le", "-ar", "8000", "-ac", "1", "-i", 
+            "-thread_queue_size", "4096", "-f", "s16le", "-ar", "8000", "-ac", "1", "-i",
             AUDIO_FIFO_PATH,
-            "-thread_queue_size", "4096", "-f", "h264", "-i", 
+            "-thread_queue_size", "4096", "-f", "h264", "-i",
             VIDEO_FIFO_PATH,
-            "-c:a", "aac", "-b:a", "32000", "-c:v", "libx264", "-preset", 
-            "ultrafast", "-tune", "zerolatency", "-async", "1", 
+            "-c:a", "aac", "-b:a", "32000", "-c:v", "libx264", "-preset",
+            "ultrafast", "-tune", "zerolatency", "-async", "1",
             "-f", "rtsp", "-rtsp_transport", "tcp", "rtsp://localhost:8554/stream"
         ]
         self.process = Process(self)
