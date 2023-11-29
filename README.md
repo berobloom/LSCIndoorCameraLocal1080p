@@ -20,7 +20,7 @@ Some files and pieces of code are sourced from: https://github.com/guino/LSC1080
 
 When placing a `product.cof` file on the SD Card with `stationssid` and `stationpwd` defined, the application will go into a development mode. This development code consists of a p2p streaming server based on TUTK. This stream can be used by their p2p client library. One such application that implements this client library is: TinyCam: https://tinycammonitor.com and will be used in the setup described in this repository. To maintain a consistent boot into this development mode, you must open the device and reflash it.
 
-## Features. 
+## Features.
 
 ### What works?
 
@@ -128,7 +128,7 @@ cd "${WORKING_DIR}"
 sudo screen /dev/ttyUSB0 115200,ixoff
 ```
 
-No error should appear and you should see a black screen. When turning on the camera, you should see the boot log. 
+No error should appear and you should see a black screen. When turning on the camera, you should see the boot log.
 
 Turn off the camera.
 
@@ -195,7 +195,7 @@ Save the following line that binwalk outputs:
 2490368       0x260000        Squashfs filesystem, little endian, version 4.0, compression:xz, size: 4671622 bytes, 222 inodes, blocksize: 131072 bytes, created: 2022-04-27 11:38:29
 ```
 
-In my setup the squashfs starts at block `2490368`. We need this number when recreating squashfs. 
+In my setup the squashfs starts at block `2490368`. We need this number when recreating squashfs.
 
 ⚠️ Don't use this number if this is not equal to yours!! ⚠️. When in doubt, you can contact me.
 
@@ -215,7 +215,7 @@ It should output the following hash. Only when the hash has matched with your `d
 6414cf6fd457634e3b0ed62a584a2077632b85c59d14f1d843c85b389a80d96a  dgiot
 ```
 
-Patch `_fulldump.bin.extracted/squashfs-root/usr/bin/dgiot` with `files/dgiot_patch.ips` using either 
+Patch `_fulldump.bin.extracted/squashfs-root/usr/bin/dgiot` with `files/dgiot_patch.ips` using either
 
 * https://www.marcrobledo.com/RomPatcher.js/
 
@@ -354,16 +354,19 @@ TinyCam can be used to restream. The Android device will then act as an NVR.
 
 Another method is a standalone proxy that will read streams from the camera using the tutk client library and resend them using rtsp. Prebuild files for this proxy can be found in: `LSCProxy` folder.
 
-You can run the proxy using `./start_stream.sh`.
+You can run it with: `python3 main.py <UID>`
+Make sure to set `AV_USERNAME` and `AV_PASSWORD`
 
 Current requirements:
 
-* Linux (X86/Amd64)
+* Linux (amd64)
+* Python
 * Default camera credentials
   * p2p user: `admin`
   * p2p password: `123456`
   * UID as environment variable
 * FFmpeg
+* Mediamtx (Included) https://github.com/bluenviron/mediamtx
 
 ### 14. End
 
@@ -373,7 +376,7 @@ Congratulations! You have modified the LSC Indoor Camera 1080P.
 
 ### Auto
 
-Nightvision is default set to automatic with the following variable in `product.cof`. 
+Nightvision is default set to automatic with the following variable in `product.cof`.
 ```
 smartir_en=1
 ```
@@ -392,7 +395,7 @@ Reboot the camera after changing these settings.
 
 ## Things to do
 
-* Write a custom p2p TUTK client with an RTSP Server [WIP] 
+* Write a custom p2p TUTK client with an RTSP Server [WIP]
   * First draft of the proxy has been added to `LSCProxy` folder
 * Patch the application binary to set up credentials dynamically
 * Write API for TUTK managed nightvision
