@@ -88,8 +88,9 @@ AV_ER_REMOTE_TIMEOUT_DISCONNECT = -20016
 IOTC_ER_INVALID_SID = -14
 
 # Other constants
-AUDIO_FIFO_PATH = pathlib.Path().absolute() / "fifos/audio_fifo"
-VIDEO_FIFO_PATH = pathlib.Path().absolute() / "fifos/video_fifo"
+FIFOS_DIR = pathlib.Path().absolute() / "fifos"
+AUDIO_FIFO_PATH = FIFOS_DIR / "audio_fifo"
+VIDEO_FIFO_PATH = FIFOS_DIR / "video_fifo"
 AV_USERNAME = "admin"
 AV_PASSWORD = "123456"
 
@@ -355,12 +356,27 @@ def thread_connect_ccr(tutk):
         ffmpeg.stop()
         rtsp_server.stop()
 
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: ./AVAPIs_Client.py UID")
         sys.exit(1)
 
     uid = sys.argv[1]
+
+    FIFOS_DIR = pathlib.Path().absolute() / "fifos"
+
+    if not FIFOS_DIR.exists():
+        FIFOS_DIR.mkdir(parents=True, exist_ok=True)
+        print(f"Directory '{FIFOS_DIR}' created.")
+
+    if not AUDIO_FIFO_PATH.exists():
+        os.mkfifo(AUDIO_FIFO_PATH)
+        print(f"Audio FIFO '{AUDIO_FIFO_PATH}' created.")
+
+    if not VIDEO_FIFO_PATH.exists():
+        os.mkfifo(VIDEO_FIFO_PATH)
+        print(f"Video FIFO '{VIDEO_FIFO_PATH}' created.")
 
     tutk_framework = Tutk(uid)
 
