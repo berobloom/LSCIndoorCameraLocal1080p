@@ -1,4 +1,4 @@
-# LSC Indoor Camera 1080P Local Hack
+# LSC Indoor Camera 1080P Local Patch
 
 ## Project description
 
