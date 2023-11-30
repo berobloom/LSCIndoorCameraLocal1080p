@@ -113,6 +113,24 @@ def ioctrl_disable_nightvision(tutk):
 
     return status
 
+def ioctrl_enable_nightvision(tutk):
+    """
+    Enable night vision through AVIOCTRL.
+
+    Args:
+        tutk (Tutk): Tutk object representing the camera.
+
+    Returns:
+        bool: True if successful, False otherwise.
+    """
+    io_nightvision = SMsgAVIoctrlSetVideoModeReq()
+    io_nightvision.channel = 0
+    io_nightvision.mode = 0
+
+    status = tutk.av_send_ioctrl(IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ, io_nightvision)
+
+    return status
+
 
 def ioctrl_enable_hd_quality(tutk):
     """
@@ -180,6 +198,10 @@ def start_ipcam_stream(tutk):
     Returns:
         bool: True if successful, False otherwise.
     """
+    if not ioctrl_enable_nightvision(tutk):
+        print("Cannot start camera. Error while disabling nightvision")
+        return False
+
     if not ioctrl_disable_nightvision(tutk):
         print("Cannot start camera. Error while disabling nightvision")
         return False
@@ -399,7 +421,6 @@ if __name__ == "__main__":
 
     #####################################
 
-    tutk_framework.av_client_exit()
     tutk_framework.av_client_stop()
     tutk_framework.iotc_session_close()
     tutk_framework.iotc_de_initialize()

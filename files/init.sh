@@ -122,12 +122,6 @@ cd /usr/bin
 
 sleep 30
 
-# Stripped custom.sh sourced from https://github.com/guino/LSC1080P/blob/main/mmc/custom.sh
-DGIOT_PID=$(${PIDOF} dgiot)
-${MKFIFO} /tmp/log
-# Redirect logs to /tmp/log for debugging
-${REREDIRECT} -m /tmp/log ${DGIOT_PID} > /tmp/redir.log
-
 # Start HTTPD Server
 BASE64_CREDENTIALS=$(echo "${HTTPD_USER}:${HTTPD_PASS}" | ${BASE64})
 echo "/${BASE64_CREDENTIALS}" > "${WEB_DIR}/httpd.conf"

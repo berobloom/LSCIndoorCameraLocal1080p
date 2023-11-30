@@ -156,7 +156,6 @@ class Tutk():
                                         ctypes.POINTER(ctypes.c_int)]
         self.iot.avClientStart2.restype = ctypes.c_int
 
-        self.iot.avClientExit.argtypes = [ctypes.c_int, ctypes.c_int]
         self.iot.avClientStop.argtypes = [ctypes.c_int]
         self.iot.IOTC_Session_Close.argtypes = [ctypes.c_int]
 
@@ -194,13 +193,6 @@ class Tutk():
 
         self.srv_type = ctypes.c_uint()
         self.resend = ctypes.c_int(-1)
-
-
-    def av_client_exit(self):
-        """
-        Exit the TUTK AV client.
-        """
-        self.iot.avClientExit(self.session_id, self.av_index)
 
 
     def av_client_stop(self):
