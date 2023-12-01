@@ -377,18 +377,15 @@ Nightvision is default set to automatic with the following variable in `product.
 ```
 smartir_en=1
 ```
-### Manual (Deprecated)
-
-Note: I found out nightvision can be managed using the tutk library. Will add this to the proxy later.
+### Manual
 
 ```
 smartir_en=0
-
-# Force color
-Day2Night=10
 ```
 
-Reboot the camera after changing these settings.
+Enable MQTT in `LSCProxy/main.py` to use nightvision in Home Assistant.
+
+Reboot the camera after changing settings in `product.cof`.
 
 ## Things to do
 
