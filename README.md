@@ -28,16 +28,13 @@ When placing a `product.cof` file on the SD Card with `stationssid` and `station
 * Audio streaming
 * Recordings
 * Motion detection
-* Manual nightvision (Custom Web API endpoint)
-  * \<camera_address>:/cgi-bin/ir-on.cgi
-  * \<camera_address>:/cgi-bin/ir-off.cgi
+* Manual nightvision
 * Auto nightvision
 * Telnet
 
 ### What does not (yet) work?
 
 * 2-Way audio
-* Black and white video while using manual nightvision (Works in auto mode!)
 * Mirroring/flipping screen
 
 ## Default camera settings
