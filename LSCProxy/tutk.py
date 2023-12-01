@@ -325,10 +325,6 @@ class Tutk():
         Returns:
             bool: True if successful, False otherwise.
         """
-        if not self.ioctrl_enable_nightvision():
-            print("Cannot start camera. Error while disabling nightvision")
-            return False
-
         if not self.ioctrl_disable_nightvision():
             print("Cannot start camera. Error while disabling nightvision")
             return False
