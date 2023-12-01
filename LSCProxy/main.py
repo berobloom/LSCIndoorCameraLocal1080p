@@ -16,6 +16,11 @@ and it relies on the following modules:
 Globals:
 - AUDIO_BUF_SIZE: Size of the audio buffer
 - VIDEO_BUF_SIZE: Size of the video buffer
+- ENABLE_MQTT: Flag to enable or disable MQTT integration (default is False)
+- MQTT_USERNAME: Username for connecting to the MQTT broker
+- MQTT_PASSWORD: Password for connecting to the MQTT broker
+- MQTT_HOSTNAME: IP address or hostname of the MQTT broker
+- MQTT_PORT: Port number for the MQTT broker
 
 Error constants:
 - AV_ER_DATA_NOREADY: Error constant for no available data to read
@@ -59,7 +64,6 @@ from tutk import Tutk
 # Globals
 AUDIO_BUF_SIZE = 512
 VIDEO_BUF_SIZE = 64000
-
 ENABLE_MQTT = False
 MQTT_USERNAME = "<username>"
 MQTT_PASSWORD = "<password"
