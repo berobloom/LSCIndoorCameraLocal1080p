@@ -49,6 +49,16 @@ MQTT_HOSTNAME = "<ip_address|hostname>"
 MQTT_PORT = "<port>"
 ```
 
+## Screenshots
+
+### Homeasistant
+
+![alt text](../images/lscproxy_ha.png)
+
+## Todo
+
+* Support for multiple camera's
+
 ## License
 
 This software is released under the [BOLA License](LICENSE).
