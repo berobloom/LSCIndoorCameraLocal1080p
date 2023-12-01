@@ -17,12 +17,6 @@ Globals:
 - AUDIO_BUF_SIZE: Size of the audio buffer
 - VIDEO_BUF_SIZE: Size of the video buffer
 
-IOCTRL constants:
-- IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ: IOCTRL constant for setting nightvision
-- IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ: IOCTRL constant for setting stream control
-- IOTYPE_USER_IPCAM_START: IOCTRL constant for starting the camera
-- IOTYPE_USER_IPCAM_AUDIOSTART: IOCTRL constant for starting audio
-
 Error constants:
 - AV_ER_DATA_NOREADY: Error constant for no available data to read
 - AV_ER_LOSED_THIS_FRAME: Error constant for losing the current frame
@@ -35,11 +29,6 @@ Other constants:
 - VIDEO_FIFO_PATH: Path to the video FIFO file
 
 Functions:
-- ioctrl_disable_nightvision: Disable night vision through AVIOCTRL.
-- ioctrl_enable_hd_quality: Enable HD quality through AVIOCTRL.
-- ioctrl_start_camera: Start the camera through AVIOCTRL.
-- ioctrl_start_audio: Start audio streaming through AVIOCTRL.
-- start_ipcam_stream: Start the IPCAM streaming by configuring various AVIOCTRL commands.
 - receive_audio: Receive and playback audio data from the IPCAM stream.
 - receive_video: Receive and playback video data from the IPCAM stream.
 - clean_buffers: Periodically clean video and audio buffers.
@@ -63,21 +52,20 @@ from services import (
     RTSPServer
 )
 from utils import usleep
+from mqtt import LscMqttClient
 from tutk import Tutk
-from tutk import (
-    SMsgAVIoctrlSetVideoModeReq,
-    SMsgAVIoctrlSetStreamCtrlReq,
-    SMsgAVIoctrlAVStream)
+
 
 # Globals
 AUDIO_BUF_SIZE = 512
 VIDEO_BUF_SIZE = 64000
 
-# IOCTRL constants
-IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ = 0x5000
-IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ = 0x0320
-IOTYPE_USER_IPCAM_START = 0x01FF
-IOTYPE_USER_IPCAM_AUDIOSTART = 0x0300
+# MQTT Client
+ENABLE_MQTT = False
+MQTT_USERNAME = "<username>"
+MQTT_PASSWORD = "<password"
+MQTT_HOSTNAME = "<ip_address|hostname>"
+MQTT_PORT = "<port>"
 
 # Error constants
 AV_ER_DATA_NOREADY = -20012
@@ -93,132 +81,6 @@ AUDIO_FIFO_PATH = FIFOS_DIR / "audio_fifo"
 VIDEO_FIFO_PATH = FIFOS_DIR / "video_fifo"
 AV_USERNAME = "admin"
 AV_PASSWORD = "123456"
-
-
-def ioctrl_disable_nightvision(tutk):
-    """
-    Disable night vision through AVIOCTRL.
-
-    Args:
-        tutk (Tutk): Tutk object representing the camera.
-
-    Returns:
-        bool: True if successful, False otherwise.
-    """
-    io_nightvision = SMsgAVIoctrlSetVideoModeReq()
-    io_nightvision.channel = 1
-    io_nightvision.mode = 1
-
-    status = tutk.av_send_ioctrl(IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ, io_nightvision)
-
-    return status
-
-def ioctrl_enable_nightvision(tutk):
-    """
-    Enable night vision through AVIOCTRL.
-
-    Args:
-        tutk (Tutk): Tutk object representing the camera.
-
-    Returns:
-        bool: True if successful, False otherwise.
-    """
-    io_nightvision = SMsgAVIoctrlSetVideoModeReq()
-    io_nightvision.channel = 0
-    io_nightvision.mode = 0
-
-    status = tutk.av_send_ioctrl(IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ, io_nightvision)
-
-    return status
-
-
-def ioctrl_enable_hd_quality(tutk):
-    """
-    Enable HD quality through AVIOCTRL.
-
-    Args:
-        tutk (Tutk): Tutk object representing the camera.
-
-    Returns:
-        bool: True if successful, False otherwise.
-    """
-    io_quality = SMsgAVIoctrlSetStreamCtrlReq()
-    io_quality.channel = 0
-    io_quality.quality = 2
-
-    status = tutk.av_send_ioctrl(IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ, io_quality)
-
-    return status
-
-
-
-def ioctrl_start_camera(tutk):
-    """
-    Start the camera through AVIOCTRL.
-
-    Args:
-        tutk (Tutk): Tutk object representing the camera.
-
-    Returns:
-        bool: True if successful, False otherwise.
-    """
-    io_camera = SMsgAVIoctrlAVStream()
-    io_camera.channel = 1
-
-    status = tutk.av_send_ioctrl(IOTYPE_USER_IPCAM_START, io_camera)
-
-    return status
-
-
-def ioctrl_start_audio(tutk):
-    """
-    Start audio streaming through AVIOCTRL.
-
-    Args:
-        tutk (Tutk): Tutk object representing the camera.
-
-    Returns:
-        bool: True if successful, False otherwise.
-    """
-    io_audio = SMsgAVIoctrlAVStream()
-    io_audio.channel = 1
-
-    status = tutk.av_send_ioctrl(IOTYPE_USER_IPCAM_AUDIOSTART, io_audio)
-
-    return status
-
-
-def start_ipcam_stream(tutk):
-    """
-    Start the IPCAM streaming by configuring various AVIOCTRL commands.
-
-    Args:
-        tutk (Tutk): Tutk object representing the camera.
-
-    Returns:
-        bool: True if successful, False otherwise.
-    """
-    if not ioctrl_enable_nightvision(tutk):
-        print("Cannot start camera. Error while disabling nightvision")
-        return False
-
-    if not ioctrl_disable_nightvision(tutk):
-        print("Cannot start camera. Error while disabling nightvision")
-        return False
-
-    if not ioctrl_enable_hd_quality(tutk):
-        print("Cannot start camera. Error while setting quality to HD")
-        return False
-
-    if not ioctrl_start_camera(tutk):
-        print("Cannot start camera. Camera error")
-        return False
-
-    if not ioctrl_start_audio(tutk):
-        print("Cannot start camera. Error while starting audio")
-        return False
-
-    return True
 
 
 def receive_audio(tutk):
@@ -346,7 +208,7 @@ def thread_connect_ccr(tutk):
 
     print("Client started")
 
-    if not start_ipcam_stream(tutk):
+    if not tutk.start_ipcam_stream():
         sys.exit(1)
     else:
         print("IOCTRL commands send successfully")
@@ -376,6 +238,14 @@ def thread_connect_ccr(tutk):
         stream_av_thread = threading.Thread(target=ffmpeg.start)
         stream_av_thread.daemon = True
         stream_av_thread.start()
+
+        if ENABLE_MQTT:
+            print("Starting MQTT...")
+            lsc_mqtt_client = LscMqttClient(tutk, MQTT_USERNAME, MQTT_PASSWORD,
+                                                  MQTT_HOSTNAME, MQTT_PORT)
+            lsc_mqtt_client_thread = threading.Thread(target=lsc_mqtt_client.start)
+            lsc_mqtt_client_thread.daemon = True
+            lsc_mqtt_client_thread.start()
 
         video_thread.join()
         audio_thread.join()

@@ -5,6 +5,12 @@ This module provides a Tutk class for managing TUTK IoT connections.
 It includes IOCTRL structs and methods
 for initializing, connecting, and interacting with TUTK devices.
 
+IOCTRL constants:
+- IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ: IOCTRL constant for setting nightvision
+- IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ: IOCTRL constant for setting stream control
+- IOTYPE_USER_IPCAM_START: IOCTRL constant for starting the camera
+- IOTYPE_USER_IPCAM_AUDIOSTART: IOCTRL constant for starting audio
+
 IOCTRL Structs:
 - SMsgAVIoctrlSetVideoModeReq: Struct for setting video mode.
 - SMsgAVIoctrlSetStreamCtrlReq: Struct for setting stream control.
@@ -24,6 +30,12 @@ Attributes:
 - iot (ctypes.CDLL): TUTK IoT library.
 
 Methods:
+- ioctrl_enable_nightvision: Enable night vision through AVIOCTRL.
+- ioctrl_disable_nightvision: Disable night vision through AVIOCTRL.
+- ioctrl_enable_hd_quality: Enable HD quality through AVIOCTRL.
+- ioctrl_start_camera: Start the camera through AVIOCTRL.
+- ioctrl_start_audio: Start audio streaming through AVIOCTRL.
+- start_ipcam_stream: Start the IPCAM streaming by configuring various AVIOCTRL commands.
 - av_client_exit(): Exit the TUTK AV client.
 - av_client_stop(): Stop the TUTK AV client.
 - iotc_session_close(): Close the TUTK IoT session.
@@ -46,6 +58,11 @@ import os
 import sys
 import pathlib
 
+# IOCTRL constants
+IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ = 0x5000
+IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ = 0x0320
+IOTYPE_USER_IPCAM_START = 0x01FF
+IOTYPE_USER_IPCAM_AUDIOSTART = 0x0300
 
 # IOCTRL structs
 class SMsgAVIoctrlSetVideoModeReq(ctypes.Structure):
@@ -91,6 +108,7 @@ class FrameInfoT(ctypes.Structure):
     ]
 
 
+
 class Tutk():
     """
     Tutk class for managing TUTK IoT connections.
@@ -108,6 +126,12 @@ class Tutk():
     - iot (ctypes.CDLL): TUTK IoT library.
 
     Methods:
+    - ioctrl_enable_nightvision: Enable night vision through AVIOCTRL.
+    - ioctrl_disable_nightvision: Disable night vision through AVIOCTRL.
+    - ioctrl_enable_hd_quality: Enable HD quality through AVIOCTRL.
+    - ioctrl_start_camera: Start the camera through AVIOCTRL.
+    - ioctrl_start_audio: Start audio streaming through AVIOCTRL.
+    - start_ipcam_stream: Start the IPCAM streaming by configuring various AVIOCTRL commands.
     - av_client_exit(): Exit the TUTK AV client.
     - av_client_stop(): Stop the TUTK AV client.
     - iotc_session_close(): Close the TUTK IoT session.
@@ -226,6 +250,131 @@ class Tutk():
 
         if status < 0:
             print(f"Error status: {status}")
+            return False
+
+        return True
+
+    def ioctrl_disable_nightvision(self):
+        """
+        Disable night vision through AVIOCTRL.
+
+        Args:
+            tutk (Tutk): Tutk object representing the camera.
+
+        Returns:
+            bool: True if successful, False otherwise.
+        """
+        io_nightvision = SMsgAVIoctrlSetVideoModeReq()
+        io_nightvision.channel = 1
+        io_nightvision.mode = 1
+
+        status = self.av_send_ioctrl(IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ, io_nightvision)
+
+        return status
+
+    def ioctrl_enable_nightvision(self):
+        """
+        Enable night vision through AVIOCTRL.
+
+        Args:
+            tutk (Tutk): Tutk object representing the camera.
+
+        Returns:
+            bool: True if successful, False otherwise.
+        """
+        io_nightvision = SMsgAVIoctrlSetVideoModeReq()
+        io_nightvision.channel = 0
+        io_nightvision.mode = 0
+
+        status = self.av_send_ioctrl(IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ, io_nightvision)
+
+        return status
+
+
+    def ioctrl_enable_hd_quality(self):
+        """
+        Enable HD quality through AVIOCTRL.
+
+        Args:
+            tutk (Tutk): Tutk object representing the camera.
+
+        Returns:
+            bool: True if successful, False otherwise.
+        """
+        io_quality = SMsgAVIoctrlSetStreamCtrlReq()
+        io_quality.channel = 0
+        io_quality.quality = 2
+
+        status = self.av_send_ioctrl(IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ, io_quality)
+
+        return status
+
+
+
+    def ioctrl_start_camera(self):
+        """
+        Start the camera through AVIOCTRL.
+
+        Args:
+            tutk (Tutk): Tutk object representing the camera.
+
+        Returns:
+            bool: True if successful, False otherwise.
+        """
+        io_camera = SMsgAVIoctrlAVStream()
+        io_camera.channel = 1
+
+        status = self.av_send_ioctrl(IOTYPE_USER_IPCAM_START, io_camera)
+
+        return status
+
+
+    def ioctrl_start_audio(self):
+        """
+        Start audio streaming through AVIOCTRL.
+
+        Args:
+            tutk (Tutk): Tutk object representing the camera.
+
+        Returns:
+            bool: True if successful, False otherwise.
+        """
+        io_audio = SMsgAVIoctrlAVStream()
+        io_audio.channel = 1
+
+        status = self.av_send_ioctrl(IOTYPE_USER_IPCAM_AUDIOSTART, io_audio)
+
+        return status
+
+
+    def start_ipcam_stream(self):
+        """
+        Start the IPCAM streaming by configuring various AVIOCTRL commands.
+
+        Args:
+            tutk (Tutk): Tutk object representing the camera.
+
+        Returns:
+            bool: True if successful, False otherwise.
+        """
+        if not self.ioctrl_enable_nightvision():
+            print("Cannot start camera. Error while disabling nightvision")
+            return False
+
+        if not self.ioctrl_disable_nightvision():
+            print("Cannot start camera. Error while disabling nightvision")
+            return False
+
+        if not self.ioctrl_enable_hd_quality():
+            print("Cannot start camera. Error while setting quality to HD")
+            return False
+
+        if not self.ioctrl_start_camera():
+            print("Cannot start camera. Camera error")
+            return False
+
+        if not self.ioctrl_start_audio():
+            print("Cannot start camera. Error while starting audio")
             return False
 
         return True
