@@ -97,11 +97,11 @@ cd "${WORKING_DIR}"
 
 Open the case as seen on the following image:
 
-![alt text](repo/images/case.png)
+![alt text](images/case.png)
 
 Remove the following screws:
 
-![alt text](repo/images/screws.png)
+![alt text](images/screws.png)
 
 ### 2. Insert an empty MicroSD card
 
@@ -111,7 +111,7 @@ Insert a MicroSD card up to 128GB in the camera.
 
 There are three connection points as seen on the following image:
 
-![alt text](repo/images/serial.png)
+![alt text](images/serial.png)
 
 Connect the camera to the serial:
 
@@ -141,7 +141,7 @@ Instead short the two following pins on the flash when booting:
 
 Do this quickly after turning on the device!
 
-![alt text](repo/images/short.png)
+![alt text](images/short.png)
 
 This will take a few retries to get it right. You are done when you get a Uboot prompt.
 
