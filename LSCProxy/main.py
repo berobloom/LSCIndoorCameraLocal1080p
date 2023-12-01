@@ -60,7 +60,6 @@ from tutk import Tutk
 AUDIO_BUF_SIZE = 512
 VIDEO_BUF_SIZE = 64000
 
-# MQTT Client
 ENABLE_MQTT = False
 MQTT_USERNAME = "<username>"
 MQTT_PASSWORD = "<password"
