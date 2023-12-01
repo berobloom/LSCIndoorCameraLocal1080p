@@ -77,6 +77,7 @@ class FrameInfoT(ctypes.Structure):
 
 
 
+
 class Tutk():
     """
     Tutk class for managing TUTK IoT connections.
@@ -116,6 +117,29 @@ class Tutk():
     - av_recv_audio_data(buf, buf_size): Receive audio data from the TUTK device.
     - av_check_audio_buf(): Check the TUTK audio buffer.
     """
+    error_constants = {
+        "AV_ER_DATA_NOREADY": -20012,
+        "AV_ER_LOSED_THIS_FRAME": -20014,
+        "AV_ER_SESSION_CLOSE_BY_REMOTE": -20015,
+        "AV_ER_REMOTE_TIMEOUT_DISCONNECT": -20016,
+        "IOTC_ER_INVALID_SID": -14
+    }
+
+    settings = {
+        "FIFOS_DIR": "fifos",
+        "AUDIO_FIFO_PATH": "fifos/audio_fifo",
+        "VIDEO_FIFO_PATH": "fifos/video_fifo",
+        "AUDIO_BUF_SIZE": 512,
+        "VIDEO_BUF_SIZE": 64000
+    }
+
+    ioctrl = {
+        "IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ": 0x5000,
+        "IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ": 0x0320,
+        "IOTYPE_USER_IPCAM_START": 0x01FF,
+        "IOTYPE_USER_IPCAM_AUDIOSTART": 0x0300
+    }
+
     def __init__(self, uid):
         self.graceful_shutdown = False
 

@@ -50,6 +50,7 @@ of the target IPCAM as a command-line argument.
 import time
 import os
 import sys
+import yaml
 import threading
 import pathlib
 from services import (
@@ -59,31 +60,7 @@ from services import (
 from utils import usleep
 from mqtt import LscMqttClient
 from tutk import Tutk
-
-
-# Globals
-AUDIO_BUF_SIZE = 512
-VIDEO_BUF_SIZE = 64000
-ENABLE_MQTT = False
-MQTT_USERNAME = "<username>"
-MQTT_PASSWORD = "<password"
-MQTT_HOSTNAME = "<ip_address|hostname>"
-MQTT_PORT = "<port>"
-
-# Error constants
-AV_ER_DATA_NOREADY = -20012
-AV_ER_LOSED_THIS_FRAME = -20014
-AV_ER_SESSION_CLOSE_BY_REMOTE = -20015
-AV_ER_REMOTE_TIMEOUT_DISCONNECT = -20016
-
-IOTC_ER_INVALID_SID = -14
-
-# Other constants
-FIFOS_DIR = pathlib.Path().absolute() / "fifos"
-AUDIO_FIFO_PATH = FIFOS_DIR / "audio_fifo"
-VIDEO_FIFO_PATH = FIFOS_DIR / "video_fifo"
-AV_USERNAME = "admin"
-AV_PASSWORD = "123456"
+# pylint: disable=W0621
 
 
 def receive_audio(tutk):
@@ -93,11 +70,11 @@ def receive_audio(tutk):
     Args:
         tutk (Tutk): Tutk object representing the camera.
     """
-    buf = tutk.create_buf(AUDIO_BUF_SIZE)
+    buf = tutk.create_buf(Tutk.settings["AUDIO_BUF_SIZE"])
 
     print("Start IPCAM audio stream...")
-
-    audio_pipe_fd = os.open(AUDIO_FIFO_PATH, os.O_WRONLY)
+    fifo_file = pathlib.Path().absolute() / Tutk.settings["AUDIO_FIFO_PATH"]
+    audio_pipe_fd = os.open(fifo_file, os.O_WRONLY)
     if audio_pipe_fd == -1:
         print("Cannot open audio_fifo file")
     else:
@@ -111,18 +88,18 @@ def receive_audio(tutk):
             usleep(10000)
             continue
 
-        status = tutk.av_recv_audio_data(buf, AUDIO_BUF_SIZE)
+        status = tutk.av_recv_audio_data(buf, Tutk.settings["AUDIO_BUF_SIZE"])
 
-        if status == AV_ER_SESSION_CLOSE_BY_REMOTE:
+        if status == Tutk.error_constants["AV_ER_SESSION_CLOSE_BY_REMOTE"]:
             print("[thread_ReceiveAudio] AV_ER_SESSION_CLOSE_BY_REMOTE")
             break
-        if status == AV_ER_REMOTE_TIMEOUT_DISCONNECT:
+        if status == Tutk.error_constants["AV_ER_REMOTE_TIMEOUT_DISCONNECT"]:
             print("[thread_ReceiveAudio] AV_ER_REMOTE_TIMEOUT_DISCONNECT")
             break
-        if status == IOTC_ER_INVALID_SID:
+        if status == Tutk.error_constants["IOTC_ER_INVALID_SID"]:
             print("[thread_ReceiveAudio] Session cant be used anymore")
             break
-        if status == AV_ER_LOSED_THIS_FRAME:
+        if status == Tutk.error_constants["AV_ER_LOSED_THIS_FRAME"]:
             continue
 
         # Audio Playback
@@ -147,27 +124,28 @@ def receive_video(tutk):
     """
     print("Start IPCAM video stream...")
 
-    video_pipe_fd = os.open(VIDEO_FIFO_PATH, os.O_WRONLY)
+    fifo_file = pathlib.Path().absolute() / Tutk.settings["VIDEO_FIFO_PATH"]
+    video_pipe_fd = os.open(fifo_file, os.O_WRONLY)
     if video_pipe_fd == -1:
         print("Cannot open video_fifo file")
     else:
         print("OK open video_fifo file")
 
-    buf = tutk.create_buf(VIDEO_BUF_SIZE)
+    buf = tutk.create_buf(Tutk.settings["VIDEO_BUF_SIZE"])
 
     while True:
-        status = tutk.av_recv_framedata2(buf, VIDEO_BUF_SIZE)
+        status = tutk.av_recv_framedata2(buf, Tutk.settings["VIDEO_BUF_SIZE"])
 
-        if status == AV_ER_DATA_NOREADY:
+        if status == Tutk.error_constants["AV_ER_DATA_NOREADY"]:
             usleep(10000)
             continue
-        if status == AV_ER_SESSION_CLOSE_BY_REMOTE:
+        if status == Tutk.error_constants["AV_ER_SESSION_CLOSE_BY_REMOTE"]:
             print("[thread_ReceiveVideo] AV_ER_SESSION_CLOSE_BY_REMOTE")
             break
-        if status == AV_ER_REMOTE_TIMEOUT_DISCONNECT:
+        if status == Tutk.error_constants["AV_ER_REMOTE_TIMEOUT_DISCONNECT"]:
             print("[thread_ReceiveVideo] AV_ER_REMOTE_TIMEOUT_DISCONNECT")
             break
-        if status == IOTC_ER_INVALID_SID:
+        if status == Tutk.error_constants["IOTC_ER_INVALID_SID"]:
             print("[thread_ReceiveVideo] Session can't be used anymore")
             break
 
@@ -198,7 +176,8 @@ def clean_buffers(tutk):
         tutk.clean_audio_buf()
 
 
-def thread_connect_ccr(tutk):
+def thread_connect_ccr(tutk, mqtt_enabled, mqtt_username,
+                           mqtt_password, mqtt_hostname, mqtt_port, av_username, av_password):
     """
     Thread to connect to the camera, start streaming, and manage various threads.
 
@@ -207,7 +186,7 @@ def thread_connect_ccr(tutk):
     """
     tutk.iotc_connect_by_uid_parallel()
 
-    tutk.av_client_start2(AV_USERNAME, AV_PASSWORD)
+    tutk.av_client_start2(av_username, av_password)
 
     print("Client started")
 
@@ -242,10 +221,10 @@ def thread_connect_ccr(tutk):
         stream_av_thread.daemon = True
         stream_av_thread.start()
 
-        if ENABLE_MQTT:
+        if mqtt_enabled:
             print("Starting MQTT...")
-            lsc_mqtt_client = LscMqttClient(tutk, MQTT_USERNAME, MQTT_PASSWORD,
-                                                  MQTT_HOSTNAME, MQTT_PORT)
+            lsc_mqtt_client = LscMqttClient(tutk, mqtt_username, mqtt_password,
+                                                  mqtt_hostname, mqtt_port)
             lsc_mqtt_client_thread = threading.Thread(target=lsc_mqtt_client.start)
             lsc_mqtt_client_thread.daemon = True
             lsc_mqtt_client_thread.start()
@@ -264,19 +243,40 @@ if __name__ == "__main__":
 
     uid = sys.argv[1]
 
-    FIFOS_DIR = pathlib.Path().absolute() / "fifos"
+    settings_yaml_file = pathlib.Path().absolute() / "settings.yaml"
+    try:
+        with open(settings_yaml_file, 'r', encoding='utf-8') as file:
+            data = yaml.safe_load(file)
 
-    if not FIFOS_DIR.exists():
-        FIFOS_DIR.mkdir(parents=True, exist_ok=True)
-        print(f"Directory '{FIFOS_DIR}' created.")
+        mqtt_enabled = data['homeassistant_credentials']['enabled']
+        if mqtt_enabled:
+            mqtt_username = data['homeassistant_credentials']['mqtt_username']
+            mqtt_password = data['homeassistant_credentials']['mqtt_password']
+            mqtt_hostname = data['homeassistant_credentials']['mqtt_hostname']
+            mqtt_port = data['homeassistant_credentials']['mqtt_port']
 
-    if not AUDIO_FIFO_PATH.exists():
-        os.mkfifo(AUDIO_FIFO_PATH)
-        print(f"Audio FIFO '{AUDIO_FIFO_PATH}' created.")
+        av_username = data['tutk_credentials']['av_username']
+        av_password = data['tutk_credentials']['av_password']
 
-    if not VIDEO_FIFO_PATH.exists():
-        os.mkfifo(VIDEO_FIFO_PATH)
-        print(f"Video FIFO '{VIDEO_FIFO_PATH}' created.")
+    except KeyError as e:
+        print(f"Error: Required key not found: {e}")
+        sys.exit(1)  # Exit with an error code
+
+    fifos_dir = pathlib.Path().absolute() / Tutk.settings["FIFOS_DIR"]
+    audio_fifo_file = pathlib.Path().absolute() / Tutk.settings["AUDIO_FIFO_PATH"]
+    video_fifo_file = pathlib.Path().absolute() / Tutk.settings["VIDEO_FIFO_PATH"]
+
+    if not fifos_dir.exists():
+        fifos_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Directory '{fifos_dir}' created.")
+
+    if not audio_fifo_file.exists():
+        os.mkfifo(audio_fifo_file)
+        print(f"Audio FIFO '{audio_fifo_file}' created.")
+
+    if not video_fifo_file.exists():
+        os.mkfifo(video_fifo_file)
+        print(f"Video FIFO '{video_fifo_file}' created.")
 
     tutk_framework = Tutk(uid)
 
@@ -286,7 +286,8 @@ if __name__ == "__main__":
     ### Connect to the camera ###########
     try:
         print("LSC Indoor Camera Proxy v1.0")
-        thread_connect_ccr(tutk_framework)
+        thread_connect_ccr(tutk_framework, mqtt_enabled, mqtt_username,
+                           mqtt_password, mqtt_hostname, mqtt_port, av_username, av_password)
     except KeyboardInterrupt:
         tutk_framework.graceful_shutdown = True
         print("You pressed Ctrl+C!")
