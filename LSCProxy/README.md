@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **LSCProxy** is a Python script designed to establish a connection to an IPCAM (Internet Protocol Camera) using the Tutk library. It configures various AVIOCTRL (Audio and Video Input/Output Control) commands to initiate streaming and manages multiple threads for video and audio reception, RTSP (Real-Time Streaming Protocol) server, ffmpeg streaming, and periodic buffer cleanup.
+The **LSCProxy** is a Python script designed to establish a connection to an IPCAM (Internet Protocol Camera) using the Tutk library. It configures various AVIOCTRL (Audio and Video Input/Output Control) commands to initiate streaming and manages multiple threads for video and audio reception, RTSP (Real-Time Streaming Protocol) server, ffmpeg streaming, and periodic buffer cleanup. Additionally, it supports MQTT with Home Assistant integration.
 
 ## Prerequisites
 
@@ -37,6 +37,16 @@ This script is the main entry point, responsible for connecting to the IPCAM, co
 
 ```bash
 python main.py <UID>
+```
+
+2. Optionally, set `ENABLE_MQTT` to `True` in `main.py` if you want to control sensors using Home Assistant.
+Configure MQTT variables as follows:
+
+```
+MQTT_USERNAME = "<username>"
+MQTT_PASSWORD = "<password"
+MQTT_HOSTNAME = "<ip_address|hostname>"
+MQTT_PORT = "<port>"
 ```
 
 ## License
