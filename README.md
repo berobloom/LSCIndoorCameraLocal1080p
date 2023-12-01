@@ -395,10 +395,9 @@ Reboot the camera after changing these settings.
 
 ## Things to do
 
-* Write a custom p2p TUTK client with an RTSP Server [WIP]
-  * First draft of the proxy has been added to `LSCProxy` folder
+* ~~Write a custom p2p TUTK client with an RTSP Server~~ [Done]
 * Patch the application binary to set up credentials dynamically
-* Write API for TUTK managed nightvision
+* ~~Write API for TUTK managed nightvision~~ [Done, using MQTT]
 * ~~Patching out internal motion detection~~ [Done]
 
 ## Contribute
