@@ -19,40 +19,8 @@ IOCTRL Structs:
 
 Tutk Class:
 - Tutk: Class for managing TUTK IoT connections.
-
-Attributes:
-- graceful_shutdown (bool): Flag to indicate if a graceful shutdown is requested.
-- uid (str): The unique identifier for the device.
-- av_index (int): The AV index for the TUTK connection.
-- session_id (int): The session ID for the TUTK connection.
-- srv_type (ctypes.c_uint): Service type for the TUTK connection.
-- resend (ctypes.c_int): Resend parameter for the TUTK connection.
-- iot (ctypes.CDLL): TUTK IoT library.
-
-Methods:
-- ioctrl_enable_nightvision: Enable night vision through AVIOCTRL.
-- ioctrl_disable_nightvision: Disable night vision through AVIOCTRL.
-- ioctrl_enable_hd_quality: Enable HD quality through AVIOCTRL.
-- ioctrl_start_camera: Start the camera through AVIOCTRL.
-- ioctrl_start_audio: Start audio streaming through AVIOCTRL.
-- start_ipcam_stream: Start the IPCAM streaming by configuring various AVIOCTRL commands.
-- av_client_exit(): Exit the TUTK AV client.
-- av_client_stop(): Stop the TUTK AV client.
-- iotc_session_close(): Close the TUTK IoT session.
-- av_send_ioctrl(iotype_command, struct): Send IOCTRL command to the TUTK device.
-- av_initialize(max_num_allowed): Initialize the TUTK AV library.
-- iotc_de_initialize(): Deinitialize the TUTK IoT and AV libraries.
-- clean_audio_buf(): Clean the TUTK audio buffer.
-- clean_video_buf(): Clean the TUTK video buffer.
-- iotc_initialize2(num): Initialize the TUTK IoT library.
-- iotc_connect_by_uid_parallel(): Connect to the TUTK device using UID in parallel mode.
-- av_client_start2(av_id, av_pass): Start the TUTK AV client.
-- create_buf(buf_size): Create a buffer of a specified size.
-- av_recv_framedata2(buf, buf_size): Receive video frame data from the TUTK device.
-- av_recv_audio_data(buf, buf_size): Receive audio data from the TUTK device.
-- av_check_audio_buf(): Check the TUTK audio buffer.
 """
-# pylint: disable=R0903, R0902
+# pylint: disable=R0903, R0902, W0201
 import ctypes
 import os
 import sys

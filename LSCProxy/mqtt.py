@@ -1,4 +1,11 @@
-# # pylint: disable=E0401
+"""
+LscMqttClient Module
+
+This module defines the LscMqttClient class, representing a client
+for interacting with an MQTT broker to manage sensors.
+It includes callback functions for connecting to the MQTT broker and handling received messages.
+"""
+# pylint: disable=E0401, W0612, W0613
 import os
 import time
 import json
@@ -20,8 +27,10 @@ class LscMqttClient():
 
     Methods:
     - __init__(self, tutk, username, password, hostname, port): Initializes the LscMqttClient.
-    - on_connect(self, client, userdata, flags, rc): Callback function when the client connects to the MQTT broker.
-    - on_message(self, client, userdata, msg): Callback function when a message is received from the MQTT broker.
+    - on_connect(self, client, userdata, flags, rc):
+      Callback function when the client connects to the MQTT broker.
+    - on_message(self, client, userdata, msg): Callback function
+      when a message is received from the MQTT broker.
     - start(self): Starts the MQTT client and continuously sends sensor states to the MQTT server.
     """
     def __init__(self, tutk, username, password, hostname, port):
