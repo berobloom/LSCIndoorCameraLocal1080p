@@ -33,21 +33,15 @@ This script is the main entry point, responsible for connecting to the IPCAM, co
 
 ## Running the Script
 
-1. Execute the script with the UID of the target IPCAM as a command-line argument.
+1. Copy `settings.yaml.example` to `settings.yaml` and change the variables to your situation.
+
+2. Execute the script with the UID of the target IPCAM as a command-line argument.
 
 ```bash
 python main.py <UID>
 ```
 
-2. Optionally, set `ENABLE_MQTT` to `True` in `main.py` if you want to control sensors using Home Assistant.
-Configure MQTT variables as follows:
-
-```
-MQTT_USERNAME = "<username>"
-MQTT_PASSWORD = "<password"
-MQTT_HOSTNAME = "<ip_address|hostname>"
-MQTT_PORT = "<port>"
-```
+3. If you want to control sensors using Home Assistant. Change the MQTT variables to your needs in `settings.yaml`.
 
 ## Screenshots
 

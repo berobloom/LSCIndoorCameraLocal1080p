@@ -1,10 +1,10 @@
 homeassistant_credentials:
   enabled: False
-  mqtt_username: <username>
-  mqtt_password: <password>
-  mqtt_hostname: <hostname>
+  mqtt_username: "<username>"
+  mqtt_password: "<password>"
+  mqtt_hostname: "<hostname>"
   mqtt_port: 1883
 
 tutk_credentials:
-  av_username: admin
-  av_password: 123456
+  av_username: "admin"
+  av_password: "123456"
