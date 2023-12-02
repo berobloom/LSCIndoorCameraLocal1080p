@@ -68,7 +68,6 @@ class LscMqttClient():
 
             amount = 3
             for i in range(amount):
-                print(f"Sending MQTT config to Home Assistant {amount - i}")
                 for sensor_command_topic, sensor in self.sensors.items():
                     self.client.publish(sensor.config_topic, json.dumps(sensor.config_payload))
                 time.sleep(1)
