@@ -15,14 +15,17 @@ class Sensor:
     - _state_payload (str): The current state of the sensor.
     - _command_topic (str): The MQTT topic for receiving commands from Home Assistant.
     - _config_payload (dict): The payload containing sensor configuration for Home Assistant.
-    - _payload_dict (dict): A dictionary mapping payload values to their corresponding boolean representations.
+    - _payload_dict (dict): A dictionary mapping payload values
+      to their corresponding boolean representations.
 
     Methods:
     - __init__(self, name, device_type, icon, tutk, sensor_dict): Initializes the Sensor instance.
-    - handle_data(self, payload): Handles incoming commands specific to switches from Home Assistant.
+    - handle_data(self, payload):
+      Handles incoming commands specific to switches from Home Assistant.
     - toggle_switch(self, enable): Toggles the switch based on the enable parameter.
     - save_state(self): Saves the current state of the sensor to a file.
-    - read_last_state(self): Reads the last saved state from a file and updates the sensor's state accordingly.
+    - read_last_state(self): Reads the last saved state from a file
+      and updates the sensor's state accordingly.
 
     Properties:
     - friendly_name: Getter for the user-friendly name of the sensor.

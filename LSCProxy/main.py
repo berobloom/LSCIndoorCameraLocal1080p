@@ -1,58 +1,32 @@
 """
 main.py
 
-This script establishes a connection to an IPCAM (Internet Protocol Camera)
-using the Tutk library, configures various AVIOCTRL (Audio and Video Input/Output Control)
-commands to start streaming, and manages multiple threads for video and audio
-reception, RTSP (Real-Time Streaming Protocol) server,
-ffmpeg streaming, and periodic buffer cleanup.
+This script establishes a connection to an IPCAM, receives audio and video streams,
+plays back the streams, and manages various threads for cleanup and additional services.
 
-The script uses the Tutk library for communication with the IPCAM,
-and it relies on the following modules:
-- services: FFMPEG (for streaming audio and video) and RTSPServer (for handling RTSP connections)
-- utils: usleep (a utility function for microsecond sleep)
-- tutk: Tutk (a custom module for Tutk library operations) and AVIOCTRL message classes
-
-Globals:
-- AUDIO_BUF_SIZE: Size of the audio buffer
-- VIDEO_BUF_SIZE: Size of the video buffer
-- ENABLE_MQTT: Flag to enable or disable MQTT integration (default is False)
-- MQTT_USERNAME: Username for connecting to the MQTT broker
-- MQTT_PASSWORD: Password for connecting to the MQTT broker
-- MQTT_HOSTNAME: IP address or hostname of the MQTT broker
-- MQTT_PORT: Port number for the MQTT broker
-
-Error constants:
-- AV_ER_DATA_NOREADY: Error constant for no available data to read
-- AV_ER_LOSED_THIS_FRAME: Error constant for losing the current frame
-- AV_ER_SESSION_CLOSE_BY_REMOTE: Error constant for session close by remote
-- AV_ER_REMOTE_TIMEOUT_DISCONNECT: Error constant for remote timeout disconnect
-- IOTC_ER_INVALID_SID: Error constant for invalid session ID
-
-Other constants:
-- AUDIO_FIFO_PATH: Path to the audio FIFO file
-- VIDEO_FIFO_PATH: Path to the video FIFO file
+The script uses the Tutk library for IPCAM communication, FFMPEG for audio and video streaming,
+RTSPServer for RTSP streaming, and LscMqttClient for MQTT communication.
 
 Functions:
-- receive_audio: Receive and playback audio data from the IPCAM stream.
-- receive_video: Receive and playback video data from the IPCAM stream.
-- clean_buffers: Periodically clean video and audio buffers.
-- thread_ConnectCCR: Thread to connect to the camera, start streaming, and manage various threads.
+- receive_audio(tutk): Receive and playback audio data from the IPCAM stream.
+- receive_video(tutk): Receive and playback video data from the IPCAM stream.
+- clean_buffers(tutk): Periodically clean video and audio buffers.
+- thread_connect_ccr(tutk, mqtt_enabled, mqtt_username, mqtt_password,
+  mqtt_hostname, mqtt_port, av_username, av_password):
+  Thread to connect to the camera, start streaming, and manage various threads.
 
 Usage:
-    python main.py <UID>
+python main.py UID
 
-    where <UID> is the unique identifier of the IPCAM.
-
-Note: This script should be executed with the UID (Unique Identifier)
-of the target IPCAM as a command-line argument.
+The script reads configuration settings from the "settings.yaml" file, including MQTT credentials,
+Tutk credentials, and FIFO paths. Make sure to provide the UID as a command-line argument.
 """
 import time
 import os
 import sys
-import yaml
 import threading
 import pathlib
+import yaml
 from services import (
     FFMPEG,
     RTSPServer
@@ -299,4 +273,4 @@ if __name__ == "__main__":
     tutk_framework.iotc_session_close()
     tutk_framework.iotc_de_initialize()
 
-    print("LSC Indoor Camera Proxy v1.0. Shutted down.")
+    print("\nLSC Indoor Camera Proxy v1.0. Shutted down.")
