@@ -123,6 +123,5 @@ cd /usr/bin
 sleep 30
 
 # Start HTTPD Server
-BASE64_CREDENTIALS=$(echo "${HTTPD_USER}:${HTTPD_PASS}" | ${BASE64})
-echo "/${BASE64_CREDENTIALS}" > "${WEB_DIR}/httpd.conf"
+echo "/:${HTTPD_USER}:${HTTPD_PASS}" > "${WEB_DIR}/httpd.conf"
 ${HTTPD} -c "${WEB_DIR}/httpd.conf" -h "${WEB_DIR}" -p ${WEB_PORT}
