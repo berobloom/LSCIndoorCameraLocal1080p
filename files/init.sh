@@ -24,7 +24,7 @@ REREDIRECT="${DATA_DIR}/reredirect"
 # Functions
 reboot_proc () {
     echo "${1}"
-    echo "${1}" > /mnt/last_boot_error.log
+    echo "${1}" > "${SDCARD_DIR}/last_boot_error.log"
     reboot
     exit 1
 }
