@@ -55,17 +55,14 @@ class RTSPServer():
 
 
     def start(self):
-
         self.process.start()
 
 
     def stop(self):
-
         self.process.stop()
 
 
 class FFMPEG():
-
     def _ffmpeg_command_builder(self, video_filter=None):
         command = [
             "ffmpeg", "-re", "-hide_banner",
