@@ -47,6 +47,7 @@ python main.py <UID>
 
 * Moar sensors
 * Support for multiple camera's
+* Cross platform support
 
 ## License
 
