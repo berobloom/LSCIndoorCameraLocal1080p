@@ -237,7 +237,6 @@ if __name__ == "__main__":
         tutk_framework.graceful_shutdown = True
         print("You pressed Ctrl+C!")
         print("Gracefully shutting down")
-
     #####################################
 
     tutk_framework.av_client_stop()
