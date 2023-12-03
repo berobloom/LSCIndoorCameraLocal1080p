@@ -205,7 +205,7 @@ if __name__ == "__main__":
 
     except KeyError as e:
         print(f"Error: Required key not found: {e}")
-        sys.exit(1)  # Exit with an error code
+        sys.exit(1)
 
     fifos_dir = pathlib.Path().absolute() / Tutk.settings["FIFOS_DIR"]
     audio_fifo_file = pathlib.Path().absolute() / Tutk.settings["AUDIO_FIFO_PATH"]
