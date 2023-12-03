@@ -43,14 +43,9 @@ python main.py <UID>
 
 3. If you want to control sensors using Home Assistant. Change the MQTT variables to your needs in `settings.yaml`.
 
-## Screenshots
-
-### Homeasistant
-
-![alt text](../images/lscproxy_ha.png)
-
 ## Todo
 
+* Moar sensors
 * Support for multiple camera's
 
 ## License
