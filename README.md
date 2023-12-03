@@ -18,7 +18,7 @@ Some files and pieces of code are sourced from: https://github.com/guino/LSC1080
 
 ## The hack in a nutshell
 
-When placing a `product.cof` file on the SD Card with `stationssid` and `stationpwd` defined, the application will go into a development mode. This development code consists of a p2p streaming server based on TUTK. This stream can be used by their p2p client library. One such application that implements this client library is: TinyCam: https://tinycammonitor.com and will be used in the setup described in this repository. To maintain a consistent boot into this development mode, you must open the device and reflash it.
+When placing a `product.cof` file on the SD Card with `stationssid` and `stationpwd` defined, the application will go into a development mode. This development code consists of a p2p streaming server based on TUTK. This stream can be used by their p2p client library. One such application that implements this client library is: TinyCam: https://tinycammonitor.com and will be used in the setup described in this repository. If you want a standalone solution with RTSP, you can also make use of a video proxy I have developed: [LSCProxy](https://github.com/berobloom/LSCIndoorCameraLocal1080p/tree/main/LSCProxy "LSC Indoor Proxy"). To maintain a consistent boot into this development mode, you must open the device and reflash it.
 
 ## Features.
 
@@ -27,7 +27,8 @@ When placing a `product.cof` file on the SD Card with `stationssid` and `station
 * Video streaming
 * Audio streaming
 * Recordings
-* Motion detection
+* Motion detection (With TinyCam)
+* Screen flip
 * Manual nightvision
 * Auto nightvision
 * Telnet
@@ -35,7 +36,6 @@ When placing a `product.cof` file on the SD Card with `stationssid` and `station
 ### What does not (yet) work?
 
 * 2-Way audio
-* Mirroring/flipping screen
 
 ## Default camera settings
 

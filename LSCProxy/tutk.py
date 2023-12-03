@@ -1,25 +1,3 @@
-"""
-Tutk Module
-
-This module provides a Tutk class for managing TUTK IoT connections.
-It includes IOCTRL structs and methods
-for initializing, connecting, and interacting with TUTK devices.
-
-IOCTRL constants:
-- IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ: IOCTRL constant for setting nightvision
-- IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ: IOCTRL constant for setting stream control
-- IOTYPE_USER_IPCAM_START: IOCTRL constant for starting the camera
-- IOTYPE_USER_IPCAM_AUDIOSTART: IOCTRL constant for starting audio
-
-IOCTRL Structs:
-- SMsgAVIoctrlSetVideoModeReq: Struct for setting video mode.
-- SMsgAVIoctrlSetStreamCtrlReq: Struct for setting stream control.
-- SMsgAVIoctrlAVStream: Struct for AV stream control.
-- FRAMEINFO_t: Struct for video and audio frame information.
-
-Tutk Class:
-- Tutk: Class for managing TUTK IoT connections.
-"""
 # pylint: disable=R0903, R0902, W0201
 import ctypes
 import os
@@ -30,6 +8,7 @@ import pathlib
 IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ = 0x5000
 IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ = 0x0320
 IOTYPE_USER_IPCAM_START = 0x01FF
+IOTYPE_USER_IPCAM_STOP = 0x02FF
 IOTYPE_USER_IPCAM_AUDIOSTART = 0x0300
 
 # IOCTRL structs
@@ -76,47 +55,7 @@ class FrameInfoT(ctypes.Structure):
     ]
 
 
-
-
 class Tutk():
-    """
-    Tutk class for managing TUTK IoT connections.
-
-    Args:
-    - uid (str): The unique identifier for the device.
-
-    Attributes:
-    - graceful_shutdown (bool): Flag to indicate if a graceful shutdown is requested.
-    - uid (str): The unique identifier for the device.
-    - av_index (int): The AV index for the TUTK connection.
-    - session_id (int): The session ID for the TUTK connection.
-    - srv_type (ctypes.c_uint): Service type for the TUTK connection.
-    - resend (ctypes.c_int): Resend parameter for the TUTK connection.
-    - iot (ctypes.CDLL): TUTK IoT library.
-
-    Methods:
-    - ioctrl_enable_nightvision: Enable night vision through AVIOCTRL.
-    - ioctrl_disable_nightvision: Disable night vision through AVIOCTRL.
-    - ioctrl_enable_hd_quality: Enable HD quality through AVIOCTRL.
-    - ioctrl_start_camera: Start the camera through AVIOCTRL.
-    - ioctrl_start_audio: Start audio streaming through AVIOCTRL.
-    - start_ipcam_stream: Start the IPCAM streaming by configuring various AVIOCTRL commands.
-    - av_client_exit(): Exit the TUTK AV client.
-    - av_client_stop(): Stop the TUTK AV client.
-    - iotc_session_close(): Close the TUTK IoT session.
-    - av_send_ioctrl(iotype_command, struct): Send IOCTRL command to the TUTK device.
-    - av_initialize(max_num_allowed): Initialize the TUTK AV library.
-    - iotc_de_initialize(): Deinitialize the TUTK IoT and AV libraries.
-    - clean_audio_buf(): Clean the TUTK audio buffer.
-    - clean_video_buf(): Clean the TUTK video buffer.
-    - iotc_initialize2(num): Initialize the TUTK IoT library.
-    - iotc_connect_by_uid_parallel(): Connect to the TUTK device using UID in parallel mode.
-    - av_client_start2(av_id, av_pass): Start the TUTK AV client.
-    - create_buf(buf_size): Create a buffer of a specified size.
-    - av_recv_framedata2(buf, buf_size): Receive video frame data from the TUTK device.
-    - av_recv_audio_data(buf, buf_size): Receive audio data from the TUTK device.
-    - av_check_audio_buf(): Check the TUTK audio buffer.
-    """
     error_constants = {
         "AV_ER_DATA_NOREADY": -20012,
         "AV_ER_LOSED_THIS_FRAME": -20014,
@@ -142,102 +81,86 @@ class Tutk():
 
     def __init__(self, uid):
         self.graceful_shutdown = False
-
         self.uid = uid
         self.av_index = None
         self.session_id = None
 
         lib_iot = pathlib.Path().absolute() / "libs/x64/libIOTCAPIs_ALL.so"
-        self.iot = ctypes.CDLL(lib_iot, mode=os.RTLD_LAZY)
 
-        self.iot.avInitialize.argtypes = [ctypes.c_int]
+        self._iot = ctypes.CDLL(lib_iot, mode=os.RTLD_LAZY)
 
-        self.iot.avDeInitialize.argtypes = []
-        self.iot.IOTC_DeInitialize.argtypes = []
+        self._iot.avInitialize.argtypes = [ctypes.c_int]
 
-        self.iot.IOTC_Initialize2.argtypes = [ctypes.c_int]
-        self.iot.IOTC_Initialize2.restype = ctypes.c_int
+        self._iot.avDeInitialize.argtypes = []
+        self._iot.IOTC_DeInitialize.argtypes = []
 
-        self.iot.IOTC_Get_SessionID.argtypes = []
-        self.iot.IOTC_Get_SessionID.restype = ctypes.c_int
+        self._iot.IOTC_Initialize2.argtypes = [ctypes.c_int]
+        self._iot.IOTC_Initialize2.restype = ctypes.c_int
 
-        self.iot.IOTC_Connect_ByUID_Parallel.argtypes = [ctypes.c_char_p, ctypes.c_int]
-        self.iot.IOTC_Connect_ByUID_Parallel.restype = ctypes.c_int
+        self._iot.IOTC_Get_SessionID.argtypes = []
+        self._iot.IOTC_Get_SessionID.restype = ctypes.c_int
 
-        self.iot.avSendIOCtrl.argtypes = [ctypes.c_int, ctypes.c_int,
+        self._iot.IOTC_Connect_ByUID_Parallel.argtypes = [ctypes.c_char_p, ctypes.c_int]
+        self._iot.IOTC_Connect_ByUID_Parallel.restype = ctypes.c_int
+
+        self._iot.avSendIOCtrl.argtypes = [ctypes.c_int, ctypes.c_int,
         ctypes.c_char_p, ctypes.c_size_t]
 
-        self.iot.avClientStart2.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p,
+        self._iot.avClientStart2.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p,
                                         ctypes.c_int, ctypes.POINTER(ctypes.c_uint), ctypes.c_int,
                                         ctypes.POINTER(ctypes.c_int)]
-        self.iot.avClientStart2.restype = ctypes.c_int
+        self._iot.avClientStart2.restype = ctypes.c_int
 
-        self.iot.avClientStop.argtypes = [ctypes.c_int]
-        self.iot.IOTC_Session_Close.argtypes = [ctypes.c_int]
+        self._iot.avClientStop.argtypes = [ctypes.c_int]
+        self._iot.IOTC_Session_Close.argtypes = [ctypes.c_int]
 
-        self.iot.avRecvFrameData2.argtypes = [ctypes.c_int, ctypes.c_void_p,
+        self._iot.avRecvFrameData2.argtypes = [ctypes.c_int, ctypes.c_void_p,
                                             ctypes.c_int,
                                             ctypes.POINTER(ctypes.c_int),
                                             ctypes.POINTER(ctypes.c_int),
                                             ctypes.c_char_p, ctypes.c_size_t,
                                             ctypes.POINTER(ctypes.c_int),
                                             ctypes.POINTER(ctypes.c_uint)]
-        self.iot.avRecvFrameData2.restype = ctypes.c_int
+        self._iot.avRecvFrameData2.restype = ctypes.c_int
 
-        self.iot.avRecvAudioData.argtypes = (ctypes.c_int,
+        self._iot.avRecvAudioData.argtypes = (ctypes.c_int,
                                             ctypes.c_char_p, ctypes.c_int,
                                             ctypes.POINTER(FrameInfoT),
                                             ctypes.c_int,
                                             ctypes.POINTER(ctypes.c_uint))
-        self.iot.avRecvAudioData.restype = ctypes.c_int
+        self._iot.avRecvAudioData.restype = ctypes.c_int
 
-        self.iot.avCheckAudioBuf.argtypes = [ctypes.c_int]
-        self.iot.avCheckAudioBuf.restype = ctypes.c_int
+        self._iot.avCheckAudioBuf.argtypes = [ctypes.c_int]
+        self._iot.avCheckAudioBuf.restype = ctypes.c_int
 
-        self.iot.avClientCleanVideoBuf.argtypes = [ctypes.c_int]
-        self.iot.avClientCleanAudioBuf.argtypes = [ctypes.c_int]
+        self._iot.avClientCleanVideoBuf.argtypes = [ctypes.c_int]
+        self._iot.avClientCleanAudioBuf.argtypes = [ctypes.c_int]
 
-        self.video_frame_info = FrameInfoT()
-        self.video_frm_no = ctypes.c_uint(0)
-        self.video_out_buf_size = ctypes.c_int(0)
-        self.video_out_frm_size = ctypes.c_int(0)
-        self.video_out_frm_info_size = ctypes.c_int(0)
+        self._video_frame_info = FrameInfoT()
+        self._video_frm_no = ctypes.c_uint(0)
+        self._video_out_buf_size = ctypes.c_int(0)
+        self._video_out_frm_size = ctypes.c_int(0)
+        self._video_out_frm_info_size = ctypes.c_int(0)
 
-        self.audio_out_frm_info_size = ctypes.c_int(16)
-        self.audio_frame_info = FrameInfoT()
-        self.audio_frm_no = ctypes.c_uint()
+        self._audio_out_frm_info_size = ctypes.c_int(16)
+        self._audio_frame_info = FrameInfoT()
+        self._audio_frm_no = ctypes.c_uint()
 
-        self.srv_type = ctypes.c_uint()
-        self.resend = ctypes.c_int(-1)
+        self._srv_type = ctypes.c_uint()
+        self._resend = ctypes.c_int(-1)
 
 
     def av_client_stop(self):
-        """
-        Stop the TUTK AV client.
-        """
-        self.iot.avClientStop(self.av_index)
+        self._iot.avClientStop(self.av_index)
 
 
     def iotc_session_close(self):
-        """
-        Close the TUTK IoT session.
-        """
-        self.iot.IOTC_Session_Close(self.session_id)
+        self._iot.IOTC_Session_Close(self.session_id)
 
 
     def av_send_ioctrl(self, iotype_command, struct):
-        """
-        Send IOCTRL command to the TUTK device.
-
-        Args:
-        - iotype_command (int): IOCTRL command type.
-        - struct (ctypes.Structure): IOCTRL command structure.
-
-        Returns:
-        - bool: True if successful, False otherwise.
-        """
         struct_bytes = bytes(struct)
-        status = self.iot.avSendIOCtrl(self.av_index, iotype_command,
+        status = self._iot.avSendIOCtrl(self.av_index, iotype_command,
                                     struct_bytes, len(struct_bytes))
 
         if status < 0:
@@ -247,15 +170,6 @@ class Tutk():
         return True
 
     def ioctrl_disable_nightvision(self):
-        """
-        Disable night vision through AVIOCTRL.
-
-        Args:
-            tutk (Tutk): Tutk object representing the camera.
-
-        Returns:
-            bool: True if successful, False otherwise.
-        """
         io_nightvision = SMsgAVIoctrlSetVideoModeReq()
         io_nightvision.channel = 1
         io_nightvision.mode = 1
@@ -265,15 +179,6 @@ class Tutk():
         return status
 
     def ioctrl_enable_nightvision(self):
-        """
-        Enable night vision through AVIOCTRL.
-
-        Args:
-            tutk (Tutk): Tutk object representing the camera.
-
-        Returns:
-            bool: True if successful, False otherwise.
-        """
         io_nightvision = SMsgAVIoctrlSetVideoModeReq()
         io_nightvision.channel = 0
         io_nightvision.mode = 0
@@ -284,15 +189,6 @@ class Tutk():
 
 
     def ioctrl_enable_hd_quality(self):
-        """
-        Enable HD quality through AVIOCTRL.
-
-        Args:
-            tutk (Tutk): Tutk object representing the camera.
-
-        Returns:
-            bool: True if successful, False otherwise.
-        """
         io_quality = SMsgAVIoctrlSetStreamCtrlReq()
         io_quality.channel = 0
         io_quality.quality = 2
@@ -304,15 +200,6 @@ class Tutk():
 
 
     def ioctrl_start_camera(self):
-        """
-        Start the camera through AVIOCTRL.
-
-        Args:
-            tutk (Tutk): Tutk object representing the camera.
-
-        Returns:
-            bool: True if successful, False otherwise.
-        """
         io_camera = SMsgAVIoctrlAVStream()
         io_camera.channel = 1
 
@@ -320,17 +207,15 @@ class Tutk():
 
         return status
 
+    def ioctrl_stop_camera(self):
+        io_camera = SMsgAVIoctrlAVStream()
+        io_camera.channel = 1
+
+        status = self.av_send_ioctrl(IOTYPE_USER_IPCAM_STOP, io_camera)
+
+        return status
 
     def ioctrl_start_audio(self):
-        """
-        Start audio streaming through AVIOCTRL.
-
-        Args:
-            tutk (Tutk): Tutk object representing the camera.
-
-        Returns:
-            bool: True if successful, False otherwise.
-        """
         io_audio = SMsgAVIoctrlAVStream()
         io_audio.channel = 1
 
@@ -340,15 +225,6 @@ class Tutk():
 
 
     def start_ipcam_stream(self):
-        """
-        Start the IPCAM streaming by configuring various AVIOCTRL commands.
-
-        Args:
-            tutk (Tutk): Tutk object representing the camera.
-
-        Returns:
-            bool: True if successful, False otherwise.
-        """
         if not self.ioctrl_disable_nightvision():
             print("Cannot start camera. Error while disabling nightvision")
             return False
@@ -369,59 +245,35 @@ class Tutk():
 
 
     def av_initialize(self, max_num_allowed):
-        """
-        Initialize the TUTK AV library.
-
-        Args:
-        - max_num_allowed (int): Maximum number of allowed connections.
-        """
-        self.iot.avInitialize(max_num_allowed)
+        self._iot.avInitialize(max_num_allowed)
 
 
     def iotc_de_initialize(self):
-        """
-        Deinitialize the TUTK IoT and AV libraries.
-        """
-        self.iot.avDeInitialize()
-        self.iot.IOTC_DeInitialize()
+        self._iot.avDeInitialize()
+        self._iot.IOTC_DeInitialize()
 
 
     def clean_audio_buf(self):
-        """
-        Clean the TUTK audio buffer.
-        """
-        self.iot.avClientCleanAudioBuf(self.av_index)
+        self._iot.avClientCleanAudioBuf(self.av_index)
 
 
     def clean_video_buf(self):
-        """
-        Clean the TUTK video buffer.
-        """
-        self.iot.avClientCleanVideoBuf(self.av_index)
+        self._iot.avClientCleanVideoBuf(self.av_index)
 
 
     def iotc_initialize2(self, num):
-        """
-        Initialize the TUTK IoT library.
-
-        Args:
-        - num (int): Initialization parameter.
-        """
-        status = self.iot.IOTC_Initialize2(num)
+        status = self._iot.IOTC_Initialize2(num)
         if status != 0:
             print("IOTCAPIs_Device exit...!!")
             sys.exit(1)
 
 
     def iotc_connect_by_uid_parallel(self):
-        """
-        Connect to the TUTK device using UID in parallel mode.
-        """
-        tmp_session_id = self.iot.IOTC_Get_SessionID()
+        tmp_session_id = self._iot.IOTC_Get_SessionID()
         if tmp_session_id < 0:
             print("Get session ID failed")
             sys.exit(1)
-        new_session_id = self.iot.IOTC_Connect_ByUID_Parallel(self.uid.encode('utf-8'),
+        new_session_id = self._iot.IOTC_Connect_ByUID_Parallel(self.uid.encode('utf-8'),
                             tmp_session_id)
         if new_session_id < 0:
             print(f"Connect by UID failed. Error code: {new_session_id}")
@@ -431,83 +283,41 @@ class Tutk():
 
 
     def av_client_start2(self, av_id, av_pass):
-        """
-        Start the TUTK AV client.
-
-        Args:
-        - av_id (str): AV ID.
-        - av_pass (str): AV password.
-        """
         timeout = 20
         service_type = 0
-        self.av_index = self.iot.avClientStart2(self.session_id, av_id.encode('utf-8'),
-                            av_pass.encode('utf-8'), timeout, ctypes.byref(self.srv_type),
-                            service_type, ctypes.byref(self.resend))
+        self.av_index = self._iot.avClientStart2(self.session_id, av_id.encode('utf-8'),
+                            av_pass.encode('utf-8'), timeout, ctypes.byref(self._srv_type),
+                            service_type, ctypes.byref(self._resend))
         if self.av_index < 0:
             print(f"avClientStart2 failed[{self.av_index}]")
             sys.exit(1)
 
 
     def create_buf(self, buf_size):
-        """
-        Create a buffer of a specified size.
-
-        Args:
-        - buf_size (int): Size of the buffer.
-
-        Returns:
-        - ctypes.create_string_buffer: The created buffer.
-        """
         buf = ctypes.create_string_buffer(buf_size)
         return buf
 
 
     def av_recv_framedata2(self, buf, buf_size):
-        """
-        Receive video frame data from the TUTK device.
-
-        Args:
-        - buf (ctypes.create_string_buffer): Buffer to store the frame data.
-        - buf_size (int): Size of the buffer.
-
-        Returns:
-        - int: Status of the operation.
-        """
-        status = self.iot.avRecvFrameData2(self.av_index, buf, buf_size,
-                                    ctypes.byref(self.video_out_buf_size),
-                                    ctypes.byref(self.video_out_frm_size),
-                                    ctypes.cast(ctypes.byref(self.video_frame_info),
+        status = self._iot.avRecvFrameData2(self.av_index, buf, buf_size,
+                                    ctypes.byref(self._video_out_buf_size),
+                                    ctypes.byref(self._video_out_frm_size),
+                                    ctypes.cast(ctypes.byref(self._video_frame_info),
                                     ctypes.c_char_p), ctypes.sizeof(FrameInfoT),
-                                    ctypes.byref(self.video_out_frm_info_size),
-                                    ctypes.byref(self.video_frm_no))
+                                    ctypes.byref(self._video_out_frm_info_size),
+                                    ctypes.byref(self._video_frm_no))
         return status
 
 
     def av_recv_audio_data(self, buf, buf_size):
-        """
-        Receive audio data from the TUTK device.
-
-        Args:
-        - buf (ctypes.create_string_buffer): Buffer to store the audio data.
-        - buf_size (int): Size of the buffer.
-
-        Returns:
-        - int: Status of the operation.
-        """
-        status = self.iot.avRecvAudioData(self.av_index, ctypes.cast(buf, ctypes.c_char_p),
+        status = self._iot.avRecvAudioData(self.av_index, ctypes.cast(buf, ctypes.c_char_p),
                                             buf_size,
-                                            self.audio_frame_info,
-                                            self.audio_out_frm_info_size,
-                                            self.audio_frm_no)
+                                            self._audio_frame_info,
+                                            self._audio_out_frm_info_size,
+                                            self._audio_frm_no)
         return status
 
 
     def av_check_audio_buf(self):
-        """
-        Check the TUTK audio buffer.
-
-        Returns:
-        - int: Status of the operation.
-        """
-        status = self.iot.avCheckAudioBuf(self.av_index)
+        status = self._iot.avCheckAudioBuf(self.av_index)
         return status

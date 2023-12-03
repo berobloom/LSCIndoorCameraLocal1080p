@@ -1,47 +1,10 @@
 # pylint: disable=W0702
 class Sensor:
-    """
-    Represents a sensor device for interaction with Home Assistant via MQTT.
-
-    Attributes:
-    - _tutk: The TUTK instance associated with the sensor.
-    - _device_type (str): The type of the sensor device.
-    - _friendly_name (str): The user-friendly name of the sensor.
-    - _safe_name (str): The sanitized and lowercased version of the sensor's name.
-    - _topic (str): The MQTT topic associated with the sensor.
-    - _subscribe (str): The MQTT topic used for subscribing to sensor commands.
-    - _config_topic (str): The MQTT topic for sending sensor configuration to Home Assistant.
-    - _state_topic (str): The MQTT topic for sending the state of the sensor to Home Assistant.
-    - _state_payload (str): The current state of the sensor.
-    - _command_topic (str): The MQTT topic for receiving commands from Home Assistant.
-    - _config_payload (dict): The payload containing sensor configuration for Home Assistant.
-    - _payload_dict (dict): A dictionary mapping payload values
-      to their corresponding boolean representations.
-
-    Methods:
-    - __init__(self, name, device_type, icon, tutk, sensor_dict): Initializes the Sensor instance.
-    - handle_data(self, payload):
-      Handles incoming commands specific to switches from Home Assistant.
-    - toggle_switch(self, enable): Toggles the switch based on the enable parameter.
-    - save_state(self): Saves the current state of the sensor to a file.
-    - read_last_state(self): Reads the last saved state from a file
-      and updates the sensor's state accordingly.
-
-    Properties:
-    - friendly_name: Getter for the user-friendly name of the sensor.
-    - safe_name: Getter for the sanitized and lowercased name of the sensor.
-    - topic: Getter for the MQTT topic associated with the sensor.
-    - subscribe: Getter for the MQTT topic used for subscribing to sensor commands.
-    - config_topic: Getter for the MQTT topic for sending sensor configuration to Home Assistant.
-    - config_payload: Getter for the payload containing sensor configuration for Home Assistant.
-    - command_topic: Getter for the MQTT topic for receiving commands from Home Assistant.
-    - state_topic: Getter for the MQTT topic for sending the state of the sensor to Home Assistant.
-    - state_payload: Getter and setter for the current state of the sensor.
-    """
-    def __init__(self, name, device_type, icon, tutk, sensor_dict):
+    def __init__(self, name, device_type, icon, on_behavior, off_behavior, tutk, sensor_dict, ffmpeg_process):
         self._tutk = tutk
         self._device_type = device_type
         self._friendly_name = name
+        self._ffmpeg_process = ffmpeg_process
 
         self._safe_name = name.replace(" ", "").lower()
         self._topic = f"homeassistant/{device_type}/{self._safe_name}"
@@ -73,17 +36,13 @@ class Sensor:
                 "ON": True,
                 "OFF": False,
             }
+            self._on_behavior = on_behavior
+            self._off_behavior = off_behavior
         sensor_dict[self.command_topic] = self
 
 
     # Handle incoming commands from home assistant specific for switches
     def handle_data(self, payload):
-        """
-        Handles incoming commands specific to switches from Home Assistant.
-
-        Parameters:
-        - payload (str): The payload received from Home Assistant.
-        """
         if self._device_type == "switch":
             for key, value in self._payload_dict.items():
                 if payload == key:
@@ -93,23 +52,13 @@ class Sensor:
                     break
 
     def toggle_switch(self, enable):
-        """
-        Toggles the switch based on the enable parameter.
-
-        Parameters:
-        - enable (bool): True to enable the switch, False to disable it.
-        """
         if self._device_type == "switch":
-            if self._safe_name == "nightvision":
-                if enable:
-                    self._tutk.ioctrl_enable_nightvision()
-                else:
-                    self._tutk.ioctrl_disable_nightvision()
+            if enable:
+                self._on_behavior()
+            else:
+                self._off_behavior()
 
     def save_state(self):
-        """
-        Saves the current state of the sensor to a file.
-        """
         file = f"states/{self._safe_name}"
         try:
             f = open(file, "x", encoding="utf-8")
@@ -123,9 +72,6 @@ class Sensor:
             f.close()
 
     def read_last_state(self):
-        """
-        Reads the last saved state from a file and updates the sensor's state accordingly.
-        """
         file = f"states/{self._safe_name}"
         try:
             f = open(file, "x", encoding="utf-8")

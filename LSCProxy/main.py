@@ -1,26 +1,3 @@
-"""
-main.py
-
-This script establishes a connection to an IPCAM, receives audio and video streams,
-plays back the streams, and manages various threads for cleanup and additional services.
-
-The script uses the Tutk library for IPCAM communication, FFMPEG for audio and video streaming,
-RTSPServer for RTSP streaming, and LscMqttClient for MQTT communication.
-
-Functions:
-- receive_audio(tutk): Receive and playback audio data from the IPCAM stream.
-- receive_video(tutk): Receive and playback video data from the IPCAM stream.
-- clean_buffers(tutk): Periodically clean video and audio buffers.
-- thread_connect_ccr(tutk, mqtt_enabled, mqtt_username, mqtt_password,
-  mqtt_hostname, mqtt_port, av_username, av_password):
-  Thread to connect to the camera, start streaming, and manage various threads.
-
-Usage:
-python main.py UID
-
-The script reads configuration settings from the "settings.yaml" file, including MQTT credentials,
-Tutk credentials, and FIFO paths. Make sure to provide the UID as a command-line argument.
-"""
 import time
 import os
 import sys
@@ -38,12 +15,6 @@ from tutk import Tutk
 
 
 def receive_audio(tutk):
-    """
-    Receive and playback audio data from the IPCAM stream.
-
-    Args:
-        tutk (Tutk): Tutk object representing the camera.
-    """
     buf = tutk.create_buf(Tutk.settings["AUDIO_BUF_SIZE"])
 
     print("Start IPCAM audio stream...")
@@ -76,13 +47,17 @@ def receive_audio(tutk):
         if status == Tutk.error_constants["AV_ER_LOSED_THIS_FRAME"]:
             continue
 
-        # Audio Playback
-        status = os.write(audio_pipe_fd, buf)
-        if status < 0:
-            print(f"audio_playback::write , ret=[{status}]")
-
         if tutk.graceful_shutdown:
             break
+
+        # Audio Playback
+        try:
+            status = os.write(audio_pipe_fd, buf)
+            if status < 0:
+                print(f"audio_playback::write , ret=[{status}]")
+        except BrokenPipeError:
+            usleep(10000)
+            continue
 
     # Close unused pipe ends
     os.close(audio_pipe_fd)
@@ -90,12 +65,6 @@ def receive_audio(tutk):
 
 
 def receive_video(tutk):
-    """
-    Receive and playback video data from the IPCAM stream.
-
-    Args:
-        tutk (Tutk): Tutk object representing the camera.
-    """
     print("Start IPCAM video stream...")
 
     fifo_file = pathlib.Path().absolute() / Tutk.settings["VIDEO_FIFO_PATH"]
@@ -123,13 +92,25 @@ def receive_video(tutk):
             print("[thread_ReceiveVideo] Session can't be used anymore")
             break
 
-        # Video Playback
-        status = os.write(video_pipe_fd, buf)
-        if status < 0:
-            print(f"video_playback::write , ret=[{status}]")
-
         if tutk.graceful_shutdown:
             break
+
+        try:
+            # Video Playback
+            status = os.write(video_pipe_fd, buf)
+            if status < 0:
+                print(f"video_playback::write , ret=[{status}]")
+        except BrokenPipeError:
+            os.close(video_pipe_fd)
+            fifo_file = pathlib.Path().absolute() / Tutk.settings["VIDEO_FIFO_PATH"]
+            video_pipe_fd = os.open(fifo_file, os.O_WRONLY)
+            if video_pipe_fd == -1:
+                print("Cannot open video_fifo file")
+            else:
+                print("OK open video_fifo file")
+            usleep(10000)
+            continue
+
 
     # Close unused pipe ends
     os.close(video_pipe_fd)
@@ -137,12 +118,6 @@ def receive_video(tutk):
 
 
 def clean_buffers(tutk):
-    """
-    Periodically clean video and audio buffers.
-
-    Args:
-        tutk (Tutk): Tutk object representing the camera.
-    """
     while True:
         time.sleep(5)
         tutk.clean_video_buf()
@@ -152,12 +127,7 @@ def clean_buffers(tutk):
 
 def thread_connect_ccr(tutk, mqtt_enabled, mqtt_username,
                            mqtt_password, mqtt_hostname, mqtt_port, av_username, av_password):
-    """
-    Thread to connect to the camera, start streaming, and manage various threads.
 
-    Args:
-        tutk (Tutk): Tutk object representing the camera.
-    """
     tutk.iotc_connect_by_uid_parallel()
 
     tutk.av_client_start2(av_username, av_password)
@@ -191,14 +161,15 @@ def thread_connect_ccr(tutk, mqtt_enabled, mqtt_username,
 
         print("Starting ffmpeg...")
         ffmpeg = FFMPEG()
-        stream_av_thread = threading.Thread(target=ffmpeg.start)
-        stream_av_thread.daemon = True
-        stream_av_thread.start()
+        ffmpeg_thread = threading.Thread(target=ffmpeg.start)
+        ffmpeg_thread.daemon = True
+        ffmpeg_thread.start()
 
         if mqtt_enabled:
             print("Starting MQTT...")
+
             lsc_mqtt_client = LscMqttClient(tutk, mqtt_username, mqtt_password,
-                                                  mqtt_hostname, mqtt_port)
+                                                  mqtt_hostname, mqtt_port, ffmpeg)
             lsc_mqtt_client_thread = threading.Thread(target=lsc_mqtt_client.start)
             lsc_mqtt_client_thread.daemon = True
             lsc_mqtt_client_thread.start()
@@ -212,7 +183,7 @@ def thread_connect_ccr(tutk, mqtt_enabled, mqtt_username,
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: ./AVAPIs_Client.py UID")
+        print("Usage: ./main.py UID")
         sys.exit(1)
 
     uid = sys.argv[1]
