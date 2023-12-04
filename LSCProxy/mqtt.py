@@ -30,6 +30,9 @@ class LscMqttClient():
         Sensor("Flip", "switch", "mdi:flip-vertical",
                 ffmpeg_process.enable_flip, ffmpeg_process.disable_flip,
                 self.tutk, self.sensors, ffmpeg_process)
+        Sensor("Private", "switch", "mdi:eye-off",
+                tutk.ioctrl_stop_camera, tutk.ioctrl_start_camera,
+                self.tutk, self.sensors, ffmpeg_process)
 
     def on_connect(self, client, userdata, flags, rc):
         if rc == 0:

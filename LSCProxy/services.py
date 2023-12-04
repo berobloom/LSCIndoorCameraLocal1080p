@@ -12,42 +12,44 @@ MEDIAMTX_PATH = pathlib.Path().absolute() / "rtsp/mediamtx"
 
 
 class Process():
-
     def __init__(self, process_object):
         self.process_object = process_object
         self.pid = None
 
 
     def start(self):
-
+        user_interrupt = 2
+        normal_exit = 255
         if self.process_object is not None:
-            try:
-                with subprocess.Popen(
-                    self.process_object.command,
-                    stdin=subprocess.DEVNULL,
-                    stdout=sys.stdout,
-                    stderr=sys.stderr,
-                ) as result:
-                    self.pid = result.pid
+            while True:
+                try:
+                    with subprocess.Popen(
+                        self.process_object.command,
+                        stdin=subprocess.DEVNULL,
+                        stdout=sys.stdout,
+                        stderr=sys.stderr,
+                    ) as result:
+                        self.pid = result.pid
 
-            except subprocess.CalledProcessError as e:
-                print(f"{self.process_object.name} failed with error: {e}")
-                sys.exit(1)
-            except FileNotFoundError:
-                print(f"{self.process_object.name} not found")
-                sys.exit(1)
+                except subprocess.CalledProcessError as e:
+                    print(f"{self.process_object.name} failed with error: {e}")
+                    sys.exit(1)
+                except FileNotFoundError:
+                    print(f"{self.process_object.name} not found")
+                    sys.exit(1)
+
+                if result.returncode == normal_exit or result.returncode == user_interrupt:
+                    break
         else:
             print("Cannot start process. No process object has been given")
 
 
     def stop(self):
-
         if self.pid is not None:
             os.kill(self.pid, signal.SIGTERM)
 
 
 class RTSPServer():
-
     def __init__(self):
         self.name = "mediamtx"
         self.command = [MEDIAMTX_PATH, "rtsp/mediamtx.yml"]
@@ -97,7 +99,6 @@ class FFMPEG():
         self._process.stop()
 
     def restart(self):
-
         print("Restarting ffmpeg...")
 
         if self._process.pid is not None:

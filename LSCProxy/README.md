@@ -43,6 +43,10 @@ python main.py <UID>
 
 3. If you want to control sensors using Home Assistant. Change the MQTT variables to your needs in `settings.yaml`.
 
+## Bugs
+
+* Audio out of sync
+
 ## Todo
 
 * Moar sensors

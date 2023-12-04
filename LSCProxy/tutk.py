@@ -200,6 +200,8 @@ class Tutk():
 
 
     def ioctrl_start_camera(self):
+        self.clean_audio_buf()
+        self.clean_video_buf()
         io_camera = SMsgAVIoctrlAVStream()
         io_camera.channel = 1
 
