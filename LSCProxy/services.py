@@ -18,35 +18,33 @@ class Process():
 
 
     def start(self):
-        user_interrupt = 2
-        normal_exit = 255
+        return_code = 0
         if self.process_object is not None:
-            while True:
-                try:
-                    with subprocess.Popen(
-                        self.process_object.command,
-                        stdin=subprocess.DEVNULL,
-                        stdout=sys.stdout,
-                        stderr=sys.stderr,
-                    ) as result:
-                        self.pid = result.pid
+            try:
+                with subprocess.Popen(
+                    self.process_object.command,
+                    stdin=subprocess.DEVNULL,
+                    stdout=sys.stdout,
+                    stderr=sys.stderr,
+                ) as result:
+                    self.pid = result.pid
 
-                except subprocess.CalledProcessError as e:
-                    print(f"{self.process_object.name} failed with error: {e}")
-                    sys.exit(1)
-                except FileNotFoundError:
-                    print(f"{self.process_object.name} not found")
-                    sys.exit(1)
-
-                if result.returncode == normal_exit or result.returncode == user_interrupt:
-                    break
+            except subprocess.CalledProcessError as e:
+                print(f"{self.process_object.name} failed with error: {e}")
+                sys.exit(1)
+            except FileNotFoundError:
+                print(f"{self.process_object.name} not found")
+                sys.exit(1)
+            return_code = result.returncode
         else:
             print("Cannot start process. No process object has been given")
+
+        return return_code
 
 
     def stop(self):
         if self.pid is not None:
-            os.kill(self.pid, signal.SIGTERM)
+            os.kill(self.pid, signal.SIGKILL)
 
 
 class RTSPServer():
@@ -92,8 +90,15 @@ class FFMPEG():
         self._process = Process(self)
 
     def start(self):
-        self._process.start()
+        # Keep ffmpeg running for Flip and Private sensor
+        while True:
+            normal_exit = 255
+            interrupt = -9
 
+            return_code = self._process.start()
+
+            if return_code == normal_exit or return_code == interrupt:
+                break
 
     def stop(self):
         self._process.stop()

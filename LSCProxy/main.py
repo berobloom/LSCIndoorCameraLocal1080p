@@ -29,7 +29,7 @@ def receive_audio(tutk):
         status = tutk.av_check_audio_buf()
         if status < 0:
             break
-        if status < 25:
+        if status < 50:
             usleep(10000)
             continue
 
@@ -121,7 +121,7 @@ def clean_buffers(tutk):
     while True:
         time.sleep(5)
         tutk.clean_video_buf()
-        time.sleep(30)
+        time.sleep(5)
         tutk.clean_audio_buf()
 
 
@@ -177,8 +177,8 @@ def thread_connect_ccr(tutk, mqtt_enabled, mqtt_username,
         video_thread.join()
         audio_thread.join()
 
-        ffmpeg.stop()
         rtsp_server.stop()
+        ffmpeg.stop()
 
 
 if __name__ == "__main__":
