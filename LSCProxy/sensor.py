@@ -131,11 +131,14 @@ class Sensor:
         """
 
         file = f"states/{self._safe_name}"
+
         try:
             f = open(file, "x", encoding="utf-8")
         except:
             pass
+
         f = open(file, "r", encoding="utf-8")
+
         contents = f.read()
         if contents != self._state_payload:
             f = open(file, "w", encoding="utf-8")
@@ -151,13 +154,17 @@ class Sensor:
         """
 
         file = f"states/{self._safe_name}"
+
         try:
             f = open(file, "x", encoding="utf-8")
         except:
+
             pass
+
         f = open(file, "r", encoding="utf-8")
+
         contents = f.read()
-        if contents in self._payload_dict.keys():
+        if contents in self._payload_dict:
             if self._device_type == "switch":
                 if contents == "ON":
                     self.toggle_switch(True)
