@@ -1,3 +1,42 @@
+"""
+TUTK Framework Wrapper
+
+This module provides a Python wrapper for the TUTK framework,
+allowing interaction with an indoor camera.
+It defines IOCTRL constants, structures,
+and functions required for establishing a connection to the camera,
+receiving audio and video streams, and controlling camera settings.
+
+IOCTRL Constants:
+    - IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ: Handles nightvision
+    - IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ: Handles quality settings
+    - IOTYPE_USER_IPCAM_START: Handles the start of the camera
+    - IOTYPE_USER_IPCAM_STOP: Handles the stop of the camera
+    - IOTYPE_USER_IPCAM_AUDIOSTART: Handles the start of the audio
+
+IOCTRL Structures:
+    - SMsgAVIoctrlSetVideoModeReq: Structure for setting video mode through IOCTRL.
+    - SMsgAVIoctrlSetStreamCtrlReq: Structure for setting stream control through IOCTRL.
+    - SMsgAVIoctrlAVStream: Structure for AV stream control through IOCTRL.
+    - FrameInfoT: Structure for video and audio frame information.
+
+Tutk Class:
+    - Defines error_constants, settings, and ioctrl dictionaries.
+    - Initializes the TUTK framework and manages IOCTRL commands.
+    - Provides functions for disabling/enabling night
+      vision, setting video quality, and controlling camera streams.
+    - Handles the initiation and cleanup of audio and video streams.
+    - Implements functions for IOCTRL commands to control camera settings.
+    - Supports initialization, connection, and cleanup of TUTK sessions.
+
+Note:
+    - This file uses the ctypes library to interface with the TUTK C library.
+    - Error handling is basic and may need to be extended for robustness.
+
+Author:
+    Berobloom
+"""
+
 # pylint: disable=R0903, R0902, W0201
 import ctypes
 import os
@@ -56,6 +95,48 @@ class FrameInfoT(ctypes.Structure):
 
 
 class Tutk():
+    """
+    TUTK Framework Wrapper Class
+
+    This class provides a Python wrapper for the TUTK framework,
+    allowing interaction with an indoor camera.
+    It defines error_constants, settings,
+    and ioctrl dictionaries and implements functions for controlling
+    the camera through IOCTRL commands.
+
+    Attributes:
+        error_constants (dict): Dictionary of TUTK error constants.
+        settings (dict): Dictionary of TUTK settings.
+        ioctrl (dict): Dictionary of TUTK IOCTRL commands.
+
+    Methods:
+        __init__(self, uid): Initializes the TUTK wrapper with a unique identifier (UID).
+        av_client_stop(self): Stops the AV client connection.
+        iotc_session_close(self): Closes the IOTC session.
+        av_send_ioctrl(self, iotype_command, struct): Sends an IOCTRL command to the AV client.
+        ioctrl_disable_nightvision(self): Disables night vision through IOCTRL.
+        ioctrl_enable_nightvision(self): Enables night vision through IOCTRL.
+        ioctrl_enable_hd_quality(self): Sets video quality to HD through IOCTRL.
+        ioctrl_start_camera(self): Starts the camera through IOCTRL.
+        ioctrl_stop_camera(self): Stops the camera through IOCTRL.
+        ioctrl_start_audio(self): Starts audio streaming through IOCTRL.
+        start_ipcam_stream(self): Initiates the camera stream with necessary settings.
+        av_initialize(self, max_num_allowed): Initializes the
+            AV client with the maximum number of allowed connections.
+        iotc_de_initialize(self): De-initializes the TUTK framework.
+        clean_audio_buf(self): Cleans the audio buffer.
+        clean_video_buf(self): Cleans the video buffer.
+        iotc_initialize2(self, num): Initializes the
+            IOTC session with the specified number of channels.
+        iotc_connect_by_uid_parallel(self): Connects to the camera by UID in parallel mode.
+        av_client_start2(self, av_id, av_pass):
+            Starts the AV client with the provided AV ID and password.
+        create_buf(self, buf_size): Creates a buffer of the specified size.
+        av_recv_framedata2(self, buf, buf_size): Receives video frame data into the provided buffer.
+        av_recv_audio_data(self, buf, buf_size): Receives audio data into the provided buffer.
+        av_check_audio_buf(self): Checks the availability of audio data in the buffer.
+    """
+
     error_constants = {
         "AV_ER_DATA_NOREADY": -20012,
         "AV_ER_LOSED_THIS_FRAME": -20014,
@@ -151,14 +232,39 @@ class Tutk():
 
 
     def av_client_stop(self):
+        """
+        Stops the AV client connection.
+
+        Returns:
+            None
+        """
+
         self._iot.avClientStop(self.av_index)
 
 
     def iotc_session_close(self):
+        """
+        Closes the IOTC session.
+
+        Returns:
+            None
+        """
+
         self._iot.IOTC_Session_Close(self.session_id)
 
 
     def av_send_ioctrl(self, iotype_command, struct):
+        """
+        Sends an IOCTRL command to the AV client.
+
+        Args:
+            iotype_command (int): IOCTRL command type.
+            struct: IOCTRL command structure.
+
+        Returns:
+            bool: True if the command was sent successfully, False otherwise.
+        """
+
         struct_bytes = bytes(struct)
         status = self._iot.avSendIOCtrl(self.av_index, iotype_command,
                                     struct_bytes, len(struct_bytes))
@@ -170,6 +276,13 @@ class Tutk():
         return True
 
     def ioctrl_disable_nightvision(self):
+        """
+        Disables night vision through IOCTRL.
+
+        Returns:
+            int: Status code of the IOCTRL command.
+        """
+
         io_nightvision = SMsgAVIoctrlSetVideoModeReq()
         io_nightvision.channel = 1
         io_nightvision.mode = 1
@@ -179,6 +292,13 @@ class Tutk():
         return status
 
     def ioctrl_enable_nightvision(self):
+        """
+        Enables night vision through IOCTRL.
+
+        Returns:
+            int: Status code of the IOCTRL command.
+        """
+
         io_nightvision = SMsgAVIoctrlSetVideoModeReq()
         io_nightvision.channel = 0
         io_nightvision.mode = 0
@@ -189,6 +309,13 @@ class Tutk():
 
 
     def ioctrl_enable_hd_quality(self):
+        """
+        Sets video quality to HD through IOCTRL.
+
+        Returns:
+            int: Status code of the IOCTRL command.
+        """
+
         io_quality = SMsgAVIoctrlSetStreamCtrlReq()
         io_quality.channel = 0
         io_quality.quality = 2
@@ -200,6 +327,13 @@ class Tutk():
 
 
     def ioctrl_start_camera(self):
+        """
+        Starts the camera through IOCTRL.
+
+        Returns:
+            int: Status code of the IOCTRL command.
+        """
+
         self.clean_audio_buf()
         self.clean_video_buf()
         io_camera = SMsgAVIoctrlAVStream()
@@ -210,6 +344,13 @@ class Tutk():
         return status
 
     def ioctrl_stop_camera(self):
+        """
+        Stops the camera through IOCTRL.
+
+        Returns:
+            int: Status code of the IOCTRL command.
+        """
+
         io_camera = SMsgAVIoctrlAVStream()
         io_camera.channel = 1
 
@@ -218,6 +359,13 @@ class Tutk():
         return status
 
     def ioctrl_start_audio(self):
+        """
+        Starts audio streaming through IOCTRL.
+
+        Returns:
+            int: Status code of the IOCTRL command.
+        """
+
         io_audio = SMsgAVIoctrlAVStream()
         io_audio.channel = 1
 
@@ -227,6 +375,13 @@ class Tutk():
 
 
     def start_ipcam_stream(self):
+        """
+        Initiates the camera stream with necessary settings.
+
+        Returns:
+            bool: True if the camera stream was initiated successfully, False otherwise.
+        """
+
         if not self.ioctrl_disable_nightvision():
             print("Cannot start camera. Error while disabling nightvision")
             return False
@@ -247,23 +402,64 @@ class Tutk():
 
 
     def av_initialize(self, max_num_allowed):
+        """
+        Initializes the AV client with the maximum number of allowed connections.
+
+        Args:
+            max_num_allowed (int): Maximum number of allowed connections.
+
+        Returns:
+            None
+        """
+
         self._iot.avInitialize(max_num_allowed)
 
 
     def iotc_de_initialize(self):
+        """
+        De-initializes the TUTK framework.
+
+        Returns:
+            None
+        """
+
         self._iot.avDeInitialize()
         self._iot.IOTC_DeInitialize()
 
 
     def clean_audio_buf(self):
+        """
+        Cleans the audio buffer.
+
+        Returns:
+            None
+        """
+
         self._iot.avClientCleanAudioBuf(self.av_index)
 
 
     def clean_video_buf(self):
+        """
+        Cleans the video buffer.
+
+        Returns:
+            None
+        """
+
         self._iot.avClientCleanVideoBuf(self.av_index)
 
 
     def iotc_initialize2(self, num):
+        """
+        Initializes the IOTC session with the specified number of channels.
+
+        Args:
+            num (int): Number of channels.
+
+        Returns:
+            None
+        """
+
         status = self._iot.IOTC_Initialize2(num)
         if status != 0:
             print("IOTCAPIs_Device exit...!!")
@@ -271,6 +467,13 @@ class Tutk():
 
 
     def iotc_connect_by_uid_parallel(self):
+        """
+        Connects to the camera by UID in parallel mode.
+
+        Returns:
+            None
+        """
+
         tmp_session_id = self._iot.IOTC_Get_SessionID()
         if tmp_session_id < 0:
             print("Get session ID failed")
@@ -285,6 +488,17 @@ class Tutk():
 
 
     def av_client_start2(self, av_id, av_pass):
+        """
+        Starts the AV client with the provided AV ID and password.
+
+        Args:
+            av_id (str): AV ID.
+            av_pass (str): AV password.
+
+        Returns:
+            None
+        """
+
         timeout = 20
         service_type = 0
         self.av_index = self._iot.avClientStart2(self.session_id, av_id.encode('utf-8'),
@@ -296,11 +510,32 @@ class Tutk():
 
 
     def create_buf(self, buf_size):
+        """
+        Creates a buffer of the specified size.
+
+        Args:
+            buf_size (int): Size of the buffer.
+
+        Returns:
+            ctypes.Array: Created buffer.
+        """
+
         buf = ctypes.create_string_buffer(buf_size)
         return buf
 
 
     def av_recv_framedata2(self, buf, buf_size):
+        """
+        Receives video frame data into the provided buffer.
+
+        Args:
+            buf: Buffer for receiving data.
+            buf_size (int): Size of the buffer.
+
+        Returns:
+            int: Status code of the AV reception.
+        """
+
         status = self._iot.avRecvFrameData2(self.av_index, buf, buf_size,
                                     ctypes.byref(self._video_out_buf_size),
                                     ctypes.byref(self._video_out_frm_size),
@@ -312,6 +547,17 @@ class Tutk():
 
 
     def av_recv_audio_data(self, buf, buf_size):
+        """
+        Receives audio data into the provided buffer.
+
+        Args:
+            buf: Buffer for receiving data.
+            buf_size (int): Size of the buffer.
+
+        Returns:
+            int: Status code of the AV reception.
+        """
+
         status = self._iot.avRecvAudioData(self.av_index, ctypes.cast(buf, ctypes.c_char_p),
                                             buf_size,
                                             self._audio_frame_info,
@@ -321,5 +567,12 @@ class Tutk():
 
 
     def av_check_audio_buf(self):
+        """
+        Checks the availability of audio data in the buffer.
+
+        Returns:
+            int: Status code of the audio buffer check.
+        """
+
         status = self._iot.avCheckAudioBuf(self.av_index)
         return status

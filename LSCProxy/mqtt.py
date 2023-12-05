@@ -8,6 +8,26 @@ import paho.mqtt.client as mqtt
 
 
 class LscMqttClient():
+    """
+    MQTT Client Class.
+
+    This class represents an MQTT client for LSC (Light, Sensor, Camera) devices.
+
+    Attributes:
+        tutk: Instance of the Tutk class for handling camera-related functionalities.
+        username: MQTT broker username.
+        password: MQTT broker password.
+        hostname: MQTT broker hostname.
+        port: MQTT broker port.
+        sensors: Dictionary to store Sensor objects.
+        client: Paho MQTT client instance.
+
+    Methods:
+        __init__(self, tutk, username, password, hostname, port, ffmpeg_process): Initializes the LSC MQTT client.
+        on_connect(self, client, userdata, flags, rc): Callback function on MQTT connection.
+        on_message(self, client, userdata, msg): Callback function on MQTT message reception.
+        start(self): Starts the MQTT client loop and handles MQTT interactions.
+    """
 
     def __init__(self, tutk, username, password, hostname, port, ffmpeg_process):
         self.sensors = {}
@@ -35,6 +55,19 @@ class LscMqttClient():
                 self.tutk, self.sensors, ffmpeg_process)
 
     def on_connect(self, client, userdata, flags, rc):
+        """
+        Callback function on MQTT connection.
+
+        Parameters:
+            client: Paho MQTT client instance.
+            userdata: User data.
+            flags: Connection flags.
+            rc: Connection result code.
+
+        Returns:
+            None
+        """
+
         if rc == 0:
             print(f"Sucessfully connected to broker: {self.hostname} on port {self.port}")
             for sensor_command_topic, sensor_object in self.sensors.items():
@@ -60,6 +93,18 @@ class LscMqttClient():
 
 
     def on_message(self, client, userdata, msg):
+        """
+        Callback function on MQTT message reception.
+
+        Parameters:
+            client: Paho MQTT client instance.
+            userdata: User data.
+            msg: MQTT message.
+
+        Returns:
+            None
+        """
+
         topic = msg.topic
         payload = msg.payload.decode('utf-8')
 
@@ -71,6 +116,13 @@ class LscMqttClient():
 
 
     def start(self):
+        """
+        Start the MQTT client loop and handle MQTT interactions.
+
+        Returns:
+            None
+        """
+
         self.client.loop_start()
 
         while True:

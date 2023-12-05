@@ -1,3 +1,41 @@
+"""
+LSC Indoor Camera Proxy v1.0
+
+This script establishes a connection to an indoor camera using the TUTK framework.
+It handles the reception of audio
+and video streams, manages the RTSP server, and interacts with other services
+such as FFMPEG and MQTT. The script takes a unique identifier (UID)
+for the camera as a command-line argument and reads configuration settings from a
+"settings.yaml" file.
+
+Usage:
+    ./main.py UID
+
+Functions:
+    - receive_audio(tutk): Continuously receives audio data from the TUTK framework
+      and writes it to the audio FIFO file.
+    - receive_video(tutk): Continuously receives video data from the TUTK framework
+      and writes it to the video FIFO file.
+    - clean_buffers(tutk): Periodically cleans video and audio buffers in the TUTK framework.
+    - thread_connect_ccr(tutk, mqtt_enabled, mqtt_username, mqtt_password,
+      mqtt_hostname, mqtt_port, av_username, av_password):
+        Connects to the camera, starts video and audio streams,
+        initializes RTSP server, and manages related threads.
+
+Main:
+    - Reads configuration settings from "settings.yaml" file.
+    - Creates FIFO files for audio and video streams.
+    - Initializes TUTK framework and establishes a connection to the camera.
+    - Enters the main loop to manage camera streams and associated threads.
+    - Gracefully shuts down on KeyboardInterrupt, closing all connections and stopping threads.
+
+Author:
+    Berobloom
+
+Version:
+    1.0
+"""
+
 import time
 import os
 import sys
@@ -15,6 +53,16 @@ from tutk import Tutk
 
 
 def receive_audio(tutk):
+    """
+    Continuously receives audio data from the TUTK framework and writes it to the audio FIFO file.
+
+    Args:
+        tutk (Tutk): The TUTK framework instance.
+
+    Returns:
+        None
+    """
+
     buf = tutk.create_buf(Tutk.settings["AUDIO_BUF_SIZE"])
 
     print("Start IPCAM audio stream...")
@@ -65,6 +113,16 @@ def receive_audio(tutk):
 
 
 def receive_video(tutk):
+    """
+    Continuously receives video data from the TUTK framework and writes it to the video FIFO file.
+
+    Args:
+        tutk (Tutk): The TUTK framework instance.
+
+    Returns:
+        None
+    """
+
     print("Start IPCAM video stream...")
 
     fifo_file = pathlib.Path().absolute() / Tutk.settings["VIDEO_FIFO_PATH"]
@@ -118,6 +176,16 @@ def receive_video(tutk):
 
 
 def clean_buffers(tutk):
+    """
+    Periodically cleans video and audio buffers in the TUTK framework.
+
+    Args:
+        tutk (Tutk): The TUTK framework instance.
+
+    Returns:
+        None
+    """
+
     while True:
         time.sleep(5)
         tutk.clean_video_buf()
@@ -127,6 +195,23 @@ def clean_buffers(tutk):
 
 def thread_connect_ccr(tutk, mqtt_enabled, mqtt_username,
                            mqtt_password, mqtt_hostname, mqtt_port, av_username, av_password):
+    """
+    Connects to the camera, starts video and audio streams,
+    initializes RTSP server, initializes MQTT client.
+
+    Args:
+        tutk (Tutk): The TUTK framework instance.
+        mqtt_enabled (bool): Flag indicating whether MQTT is enabled.
+        mqtt_username (str): MQTT username.
+        mqtt_password (str): MQTT password.
+        mqtt_hostname (str): MQTT broker hostname.
+        mqtt_port (int): MQTT broker port.
+        av_username (str): TUTK AV server username.
+        av_password (str): TUTK AV server password.
+
+    Returns:
+        None
+    """
 
     tutk.iotc_connect_by_uid_parallel()
 

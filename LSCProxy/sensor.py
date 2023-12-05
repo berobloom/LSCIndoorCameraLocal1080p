@@ -1,6 +1,50 @@
 # pylint: disable=W0702
 class Sensor:
-    def __init__(self, name, device_type, icon, on_behavior, off_behavior, tutk, sensor_dict, ffmpeg_process):
+    """
+    Sensor Class.
+
+    This class represents a sensor for LSC (Light, Sensor, Camera) devices.
+
+    Attributes:
+        _tutk: Instance of the Tutk class for handling camera-related functionalities.
+        _device_type: Type of the device (e.g., switch).
+        _friendly_name: User-friendly name of the sensor.
+        _ffmpeg_process: Instance of the FFMPEG class.
+        _safe_name: Sanitized and lowercased name of the sensor.
+        _topic: MQTT topic associated with the sensor.
+        _subscribe: MQTT topic used for subscribing to sensor commands.
+        _config_topic: MQTT topic for sending sensor configuration to Home Assistant.
+        _state_topic: MQTT topic for sending the state of the sensor to Home Assistant.
+        _state_payload: Current state of the sensor.
+        _command_topic: MQTT topic for receiving commands from Home Assistant.
+        _config_payload: Payload containing sensor configuration for Home Assistant.
+        _payload_dict: Dictionary mapping payload values to boolean states.
+
+    Methods:
+        __init__(self, name, device_type, icon, on_behavior, off_behavior, tutk,
+            sensor_dict, ffmpeg_process):
+            Initializes the Sensor object.
+        handle_data(self, payload): Handles incoming
+            commands from Home Assistant specific to switches.
+        toggle_switch(self, enable): Toggles the switch based on the given enable state.
+        save_state(self): Saves the current state of the sensor to a file.
+        read_last_state(self): Reads the last saved state of the sensor from a file.
+
+    Properties:
+        friendly_name: Getter for the user-friendly name of the sensor.
+        safe_name: Getter for the sanitized and lowercased name of the sensor.
+        topic: Getter for the MQTT topic associated with the sensor.
+        subscribe: Getter for the MQTT topic used for subscribing to sensor commands.
+        config_topic: Getter for the MQTT topic for sending sensor configuration to Home Assistant.
+        config_payload: Getter for the payload containing sensor configuration for Home Assistant.
+        command_topic: Getter for the MQTT topic for receiving commands from Home Assistant.
+        state_topic: Getter for the MQTT topic for sending
+            the state of the sensor to Home Assistant.
+        state_payload: Getter for the current state of the sensor.
+    """
+
+    def __init__(self, name, device_type, icon, on_behavior, off_behavior,
+                 tutk, sensor_dict, ffmpeg_process):
         self._tutk = tutk
         self._device_type = device_type
         self._friendly_name = name
@@ -43,6 +87,16 @@ class Sensor:
 
     # Handle incoming commands from home assistant specific for switches
     def handle_data(self, payload):
+        """
+        Handles incoming commands from Home Assistant specific to switches.
+
+        Parameters:
+            payload: Payload received from Home Assistant.
+
+        Returns:
+            None
+        """
+
         if self._device_type == "switch":
             for key, value in self._payload_dict.items():
                 if payload == key:
@@ -52,6 +106,16 @@ class Sensor:
                     break
 
     def toggle_switch(self, enable):
+        """
+        Toggles the switch based on the given enable state.
+
+        Parameters:
+            enable: Boolean value representing the desired state of the switch.
+
+        Returns:
+            None
+        """
+
         if self._device_type == "switch":
             if enable:
                 self._on_behavior()
@@ -59,6 +123,13 @@ class Sensor:
                 self._off_behavior()
 
     def save_state(self):
+        """
+        Saves the current state of the sensor to a file.
+
+        Returns:
+            None
+        """
+
         file = f"states/{self._safe_name}"
         try:
             f = open(file, "x", encoding="utf-8")
@@ -72,6 +143,13 @@ class Sensor:
             f.close()
 
     def read_last_state(self):
+        """
+        Reads the last saved state of the sensor from a file.
+
+        Returns:
+            None
+        """
+
         file = f"states/{self._safe_name}"
         try:
             f = open(file, "x", encoding="utf-8")
