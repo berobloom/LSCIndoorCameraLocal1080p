@@ -1,4 +1,4 @@
-# pylint: disable=E0401, W0612, W0613
+# pylint: disable=E0401, W0612, W0613, C0114
 import os
 import time
 import json
@@ -25,7 +25,8 @@ class LscMqttClient():
         client: Paho MQTT client instance.
 
     Methods:
-        __init__(self, tutk, username, password, hostname, port, ffmpeg_process): Initializes the LSC MQTT client.
+        __init__(self, tutk, username, password, hostname, port,
+            ffmpeg_process): Initializes the LSC MQTT client.
         on_connect(self, client, userdata, flags, rc): Callback function on MQTT connection.
         on_message(self, client, userdata, msg): Callback function on MQTT message reception.
         start(self): Starts the MQTT client loop and handles MQTT interactions.
@@ -48,7 +49,8 @@ class LscMqttClient():
         self.client.connect(self.hostname, self.port, keepalive)
 
         ### Add sensors here ###
-        nightvision = Nightvision("Night vision", "switch", "mdi:light-flood-down", self.tutk, ffmpeg_process)
+        nightvision = Nightvision("Night vision",
+                                  "switch", "mdi:light-flood-down", self.tutk, ffmpeg_process)
         private = Private("Private", "switch", "mdi:eye-off", self.tutk, ffmpeg_process)
         flip = Flip("Flip", "switch", "mdi:flip-vertical", self.tutk, ffmpeg_process)
 
