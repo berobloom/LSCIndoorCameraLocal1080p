@@ -1,4 +1,4 @@
-# pylint: disable=W0702
+# pylint: disable=W0702, C0114
 class Sensor:
     """
     Sensor Class.
@@ -43,8 +43,7 @@ class Sensor:
         state_payload: Getter for the current state of the sensor.
     """
 
-    def __init__(self, name, device_type, icon, on_behavior, off_behavior,
-                 tutk, sensor_dict, ffmpeg_process):
+    def __init__(self, name, device_type, icon, tutk, ffmpeg_process):
         self._tutk = tutk
         self._device_type = device_type
         self._friendly_name = name
@@ -80,12 +79,8 @@ class Sensor:
                 "ON": True,
                 "OFF": False,
             }
-            self._on_behavior = on_behavior
-            self._off_behavior = off_behavior
-        sensor_dict[self.command_topic] = self
 
 
-    # Handle incoming commands from home assistant specific for switches
     def handle_data(self, payload):
         """
         Handles incoming commands from Home Assistant specific to switches.
@@ -118,9 +113,11 @@ class Sensor:
 
         if self._device_type == "switch":
             if enable:
-                self._on_behavior()
+                # Define this as a method in the subclass
+                pass
             else:
-                self._off_behavior()
+                # Define this as a method in the subclass
+                pass
 
     def save_state(self):
         """

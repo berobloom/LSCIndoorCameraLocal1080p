@@ -3,7 +3,9 @@ import os
 import time
 import json
 import sys
-from sensor import Sensor
+from sensors.nightvision import Nightvision
+from sensors.private import Private
+from sensors.flip import Flip
 import paho.mqtt.client as mqtt
 
 
@@ -31,6 +33,7 @@ class LscMqttClient():
 
     def __init__(self, tutk, username, password, hostname, port, ffmpeg_process):
         self.sensors = {}
+
         self.tutk = tutk
         self.username = username
         self.password = password
@@ -44,15 +47,15 @@ class LscMqttClient():
         keepalive = 60
         self.client.connect(self.hostname, self.port, keepalive)
 
-        Sensor("Night vision", "switch", "mdi:light-flood-down",
-                tutk.ioctrl_enable_nightvision, tutk.ioctrl_disable_nightvision,
-                self.tutk, self.sensors, ffmpeg_process)
-        Sensor("Flip", "switch", "mdi:flip-vertical",
-                ffmpeg_process.enable_flip, ffmpeg_process.disable_flip,
-                self.tutk, self.sensors, ffmpeg_process)
-        Sensor("Private", "switch", "mdi:eye-off",
-                tutk.ioctrl_stop_camera, tutk.ioctrl_start_camera,
-                self.tutk, self.sensors, ffmpeg_process)
+        ### Add sensors here ###
+        nightvision = Nightvision("Night vision", "switch", "mdi:light-flood-down", self.tutk, ffmpeg_process)
+        private = Private("Private", "switch", "mdi:eye-off", self.tutk, ffmpeg_process)
+        flip = Flip("Flip", "switch", "mdi:flip-vertical", self.tutk, ffmpeg_process)
+
+        self.sensors[nightvision.command_topic] = nightvision
+        self.sensors[private.command_topic] = private
+        self.sensors[flip.command_topic] = flip
+        ### Add sensors here ###
 
     def on_connect(self, client, userdata, flags, rc):
         """
