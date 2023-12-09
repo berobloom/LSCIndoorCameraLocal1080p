@@ -109,7 +109,7 @@ class Sensor:
                 pass
 
 
-    def _save_state(self):
+    def save_state(self):
         """
         Saves the current state of the sensor to a file.
 
@@ -133,7 +133,7 @@ class Sensor:
             f.close()
 
 
-    def _read_last_state(self):
+    def read_last_state(self):
         """
         Reads the last saved state of the sensor from a file.
 
@@ -159,3 +159,81 @@ class Sensor:
                 if contents == "OFF":
                     self._toggle_switch(False)
                 self._state_payload = contents
+
+
+    @property
+    def command_topic(self):
+        """
+        Getter for the command topic.
+
+        Returns:
+            MQTT command topic.
+        """
+
+        return self._command_topic
+
+    @property
+    def topic(self):
+        """
+        Getter for the topic.
+
+        Returns:
+            MQTT topic.
+        """
+
+        return self._topic
+
+    @property
+    def subscribe(self):
+        """
+        Getter for the subscribe topic.
+
+        Returns:
+            MQTT subscribe topic.
+        """
+
+        return self._subscribe
+
+    @property
+    def config_topic(self):
+        """
+        Getter for the config topic.
+
+        Returns:
+            MQTT config topic.
+        """
+
+        return self._config_topic
+
+    @property
+    def config_payload(self):
+        """
+        Getter for the config payload.
+
+        Returns:
+            MQTT config payload.
+        """
+
+        return self._config_payload
+
+    @property
+    def state_topic(self):
+        """
+        Getter for the state topic.
+
+        Returns:
+            MQTT state topic.
+        """
+
+        return self._state_topic
+
+    @property
+    def state_payload(self):
+        """
+        Getter for the state payload.
+
+        Returns:
+            MQTT state payload.
+        """
+
+        return self._state_payload
