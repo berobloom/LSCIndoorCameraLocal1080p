@@ -1,5 +1,5 @@
 # pylint: disable=C0114
-from LSCProxy.sensor import Sensor
+from sensor import Sensor
 
 
 class Nightvision(Sensor):

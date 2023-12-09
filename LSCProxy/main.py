@@ -35,21 +35,21 @@ Author:
 Version:
     1.0
 """
-
+# pylint: disable=W0621, E0401
 import time
 import os
 import sys
 import threading
 import pathlib
 import yaml
-from LSCProxy.services import (
+from services import (
     FFMPEG,
     RTSPServer
 )
-from LSCProxy.utils import usleep
-from LSCProxy.mqtt import LscMqttClient
-from LSCProxy.tutk import Tutk
-# pylint: disable=W0621
+from utils import usleep
+from mqtt import LscMqttClient
+from tutk import Tutk
+
 
 
 def receive_audio(tutk):

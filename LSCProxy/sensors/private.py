@@ -1,5 +1,5 @@
-# pylint: disable=C0114
-from LSCProxy.sensor import Sensor
+# pylint: disable=C0114, E0401
+from sensor import Sensor
 
 
 class Private(Sensor):

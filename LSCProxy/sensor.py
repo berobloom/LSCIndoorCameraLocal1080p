@@ -29,18 +29,6 @@ class Sensor:
         toggle_switch(self, enable): Toggles the switch based on the given enable state.
         save_state(self): Saves the current state of the sensor to a file.
         read_last_state(self): Reads the last saved state of the sensor from a file.
-
-    Properties:
-        friendly_name: Getter for the user-friendly name of the sensor.
-        safe_name: Getter for the sanitized and lowercased name of the sensor.
-        topic: Getter for the MQTT topic associated with the sensor.
-        subscribe: Getter for the MQTT topic used for subscribing to sensor commands.
-        config_topic: Getter for the MQTT topic for sending sensor configuration to Home Assistant.
-        config_payload: Getter for the payload containing sensor configuration for Home Assistant.
-        command_topic: Getter for the MQTT topic for receiving commands from Home Assistant.
-        state_topic: Getter for the MQTT topic for sending
-            the state of the sensor to Home Assistant.
-        state_payload: Getter for the current state of the sensor.
     """
 
     def __init__(self, name, device_type, icon, tutk, ffmpeg_process):
@@ -73,8 +61,8 @@ class Sensor:
             }
         }
         if device_type == "switch":
-            self.config_payload["state_off"] = "OFF"
-            self.config_payload["state_on"] = "ON"
+            self._config_payload["state_off"] = "OFF"
+            self._config_payload["state_on"] = "ON"
             self._payload_dict = {
                 "ON": True,
                 "OFF": False,
@@ -95,12 +83,13 @@ class Sensor:
         if self._device_type == "switch":
             for key, value in self._payload_dict.items():
                 if payload == key:
-                    self.toggle_switch(value)
+                    self._toggle_switch(value)
                     self._state_payload = payload
-                    self.save_state()
+                    self._save_state()
                     break
 
-    def toggle_switch(self, enable):
+
+    def _toggle_switch(self, enable):
         """
         Toggles the switch based on the given enable state.
 
@@ -119,7 +108,8 @@ class Sensor:
                 # Define this as a method in the subclass
                 pass
 
-    def save_state(self):
+
+    def _save_state(self):
         """
         Saves the current state of the sensor to a file.
 
@@ -142,7 +132,8 @@ class Sensor:
             f.write(self._state_payload)
             f.close()
 
-    def read_last_state(self):
+
+    def _read_last_state(self):
         """
         Reads the last saved state of the sensor from a file.
 
@@ -164,78 +155,7 @@ class Sensor:
         if contents in self._payload_dict:
             if self._device_type == "switch":
                 if contents == "ON":
-                    self.toggle_switch(True)
+                    self._toggle_switch(True)
                 if contents == "OFF":
-                    self.toggle_switch(False)
+                    self._toggle_switch(False)
                 self._state_payload = contents
-
-
-    @property
-    def friendly_name(self):
-        """
-        Getter for the user-friendly name of the sensor.
-        """
-        return self._friendly_name
-
-    @property
-    def safe_name(self):
-        """
-        Getter for the sanitized and lowercased name of the sensor.
-        """
-        return self._safe_name
-
-    @property
-    def topic(self):
-        """
-        Getter for the MQTT topic associated with the sensor.
-        """
-        return self._topic
-
-    @property
-    def subscribe(self):
-        """
-        Getter for the MQTT topic used for subscribing to sensor commands.
-        """
-        return self._subscribe
-
-    @property
-    def config_topic(self):
-        """
-        Getter for the MQTT topic for sending sensor configuration to Home Assistant.
-        """
-        return self._config_topic
-
-    @property
-    def config_payload(self):
-        """
-        Getter for the payload containing sensor configuration for Home Assistant.
-        """
-        return self._config_payload
-
-    @property
-    def command_topic(self):
-        """
-        Getter for the MQTT topic for receiving commands from Home Assistant.
-        """
-        return self._command_topic
-
-    @property
-    def state_topic(self):
-        """
-        Getter for the MQTT topic for sending the state of the sensor to Home Assistant.
-        """
-        return self._state_topic
-
-    @property
-    def state_payload(self):
-        """
-        Getter for the current state of the sensor.
-        """
-        return self._state_payload
-
-    @state_payload.setter
-    def state_payload(self,new_payload):
-        """
-        Setter for the current state of the sensor.
-        """
-        self._state_payload = new_payload
