@@ -1,5 +1,5 @@
 # pylint: disable=C0114
-from sensor import Sensor
+from LSCProxy.sensor import Sensor
 
 
 class Flip(Sensor):

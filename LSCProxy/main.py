@@ -42,13 +42,13 @@ import sys
 import threading
 import pathlib
 import yaml
-from services import (
+from LSCProxy.services import (
     FFMPEG,
     RTSPServer
 )
-from utils import usleep
-from mqtt import LscMqttClient
-from tutk import Tutk
+from LSCProxy.utils import usleep
+from LSCProxy.mqtt import LscMqttClient
+from LSCProxy.tutk import Tutk
 # pylint: disable=W0621
 
 
