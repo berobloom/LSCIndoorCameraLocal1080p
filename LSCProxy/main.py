@@ -266,6 +266,7 @@ def thread_connect_ccr(tutk, mqtt_enabled, mqtt_username,
         ffmpeg.stop()
 
 def print_ascii_title():
+    # pylint: disable=W1401
     """
     Prints the ASCII title.
     """
