@@ -33,6 +33,7 @@ class Nightvision(Sensor):
 
         self._tutk.ioctrl_enable_nightvision()
 
+
     def off(self):
         """
         Disable night vision.
