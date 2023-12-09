@@ -1,4 +1,4 @@
-# pylint: disable=C0114
+# pylint: disable=C0114, E0401
 from sensor import Sensor
 
 
