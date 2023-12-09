@@ -29,6 +29,15 @@ class Sensor:
         toggle_switch(self, enable): Toggles the switch based on the given enable state.
         save_state(self): Saves the current state of the sensor to a file.
         read_last_state(self): Reads the last saved state of the sensor from a file.
+
+    Properties:
+        command_topic: Getter for the command topic.
+        topic: Getter for the topic.
+        subscribe: Getter for the subscribe topic.
+        config_topic: Getter for the config topic.
+        config_payload: Getter for the config payload.
+        state_topic: Getter for the state topic.
+        state_payload: Getter for the state payload.
     """
 
     def __init__(self, name, device_type, icon, tutk, ffmpeg_process):
@@ -85,7 +94,7 @@ class Sensor:
                 if payload == key:
                     self._toggle_switch(value)
                     self._state_payload = payload
-                    self._save_state()
+                    self.save_state()
                     break
 
 
