@@ -265,6 +265,20 @@ def thread_connect_ccr(tutk, mqtt_enabled, mqtt_username,
         rtsp_server.stop()
         ffmpeg.stop()
 
+def print_ascii_title():
+    """
+    Prints the ASCII title.
+    """
+    title = """
+  _     ____   ____ ____
+ | |   / ___| / ___|  _ \ _ __ _____  ___   _
+ | |   \___ \| |   | |_) | '__/ _ \ \/ / | | |
+ | |___ ___) | |___|  __/| | | (_) >  <| |_| |
+ |_____|____/ \____|_|   |_|  \___/_/\_\\__, |
+                                        |___/
+    """
+    print(title)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -315,7 +329,9 @@ if __name__ == "__main__":
 
     ### Connect to the camera ###########
     try:
-        print("LSC Indoor Camera Proxy v1.0")
+        print_ascii_title()
+        print("-Version: 1.0-\n")
+
         thread_connect_ccr(tutk_framework, mqtt_enabled, mqtt_username,
                            mqtt_password, mqtt_hostname, mqtt_port, av_username, av_password)
     except KeyboardInterrupt:
