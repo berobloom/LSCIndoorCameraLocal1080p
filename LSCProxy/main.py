@@ -6,9 +6,8 @@ framework.
 It handles the reception of audio
 and video streams, manages the RTSP server, and interacts with other services
 such as FFMPEG and MQTT. The script takes a unique identifier (UID)
-for the camera as a command-line argument and reads configuration settings
-from a
-"settings.yaml" file.
+for the camera as a command-line argument and reads configuration
+settings from a "settings.yaml" file.
 
 Usage:
     ./main.py UID
