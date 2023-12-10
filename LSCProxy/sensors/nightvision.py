@@ -7,7 +7,6 @@ class Nightvision(Sensor):
     Night vision sensor class.
     """
 
-
     def toggle_switch(self, enable):
         """
         Toggles the switch based on the given enable state.
@@ -25,14 +24,12 @@ class Nightvision(Sensor):
             else:
                 self.off()
 
-
     def on(self):
         """
         Enable night vision.
         """
 
         self._tutk.ioctrl_enable_nightvision()
-
 
     def off(self):
         """

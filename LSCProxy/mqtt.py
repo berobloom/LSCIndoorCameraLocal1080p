@@ -48,7 +48,7 @@ class LscMqttClient():
         keepalive = 60
         self._client.connect(self._hostname, self._port, keepalive)
 
-        ### Add sensors here ###
+        # Add sensors here ###
         nightvision = Nightvision("Night vision",
                                   "switch", "mdi:light-flood-down", self._tutk, ffmpeg_process)
         private = Private("Private", "switch", "mdi:eye-off", self._tutk, ffmpeg_process)
@@ -57,7 +57,6 @@ class LscMqttClient():
         self._sensors[nightvision.command_topic] = nightvision
         self._sensors[private.command_topic] = private
         self._sensors[flip.command_topic] = flip
-        ### Add sensors here ###
 
     def _on_connect(self, client, userdata, flags, rc):
         """
@@ -96,7 +95,6 @@ class LscMqttClient():
             print("Cannot connect to broker. Exit application")
             sys.exit(1)
 
-
     def _on_message(self, client, userdata, msg):
         """
         Callback function on MQTT message reception.
@@ -118,7 +116,6 @@ class LscMqttClient():
             found_sensor = self._sensors[topic]
             found_sensor.handle_data(payload)
             client.publish(found_sensor.state_topic, found_sensor.state_payload)
-
 
     def start(self):
         """

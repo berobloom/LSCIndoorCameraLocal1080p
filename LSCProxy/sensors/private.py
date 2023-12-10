@@ -7,7 +7,6 @@ class Private(Sensor):
     Private sensor class.
     """
 
-
     def toggle_switch(self, enable):
         """
         Toggles the switch based on the given enable state.
@@ -25,14 +24,12 @@ class Private(Sensor):
             else:
                 self.off()
 
-
     def on(self):
         """
         Enable private.
         """
 
         self._tutk.ioctrl_stop_camera()
-
 
     def off(self):
         """

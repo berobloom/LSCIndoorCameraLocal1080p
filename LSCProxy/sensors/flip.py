@@ -7,7 +7,6 @@ class Flip(Sensor):
     Flip sensor class.
     """
 
-
     def toggle_switch(self, enable):
         """
         Toggles the switch based on the given enable state.
@@ -25,7 +24,6 @@ class Flip(Sensor):
             else:
                 self.off()
 
-
     def on(self):
         """
         Enable video flipping and restart the FFMPEG process.
@@ -34,7 +32,6 @@ class Flip(Sensor):
         if not self._ffmpeg_process.is_flipped:
             self._ffmpeg_process.enable_flip()
             self._ffmpeg_process.restart()
-
 
     def off(self):
         """

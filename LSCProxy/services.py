@@ -55,7 +55,6 @@ class Process():
         self.process_object = process_object
         self.pid = None
 
-
     def start(self):
         """
         Start the subprocess.
@@ -86,7 +85,6 @@ class Process():
             print("Cannot start process. No process object has been given")
 
         return return_code
-
 
     def stop(self):
         """
@@ -123,7 +121,6 @@ class RTSPServer():
         self.command = [MEDIAMTX_PATH, "rtsp/mediamtx.yml"]
         self.process = Process(self)
 
-
     def start(self):
         """
         Start the RTSP server process.
@@ -133,7 +130,6 @@ class RTSPServer():
         """
 
         self.process.start()
-
 
     def stop(self):
         """
@@ -186,14 +182,12 @@ class FFMPEG():
         ])
         return command
 
-
     def __init__(self):
         self.name = "ffmpeg"
         self.command = self._ffmpeg_command_builder()
         self.is_flipped = False
 
         self._process = Process(self)
-
 
     def start(self):
         """
@@ -213,7 +207,6 @@ class FFMPEG():
             if return_code == normal_exit or return_code == interrupt:
                 break
 
-
     def stop(self):
         """
         Stop the FFMPEG process.
@@ -223,7 +216,6 @@ class FFMPEG():
         """
 
         self._process.stop()
-
 
     def restart(self):
         """
@@ -241,7 +233,6 @@ class FFMPEG():
         new_ffmpeg_thread.daemon = True
         new_ffmpeg_thread.start()
 
-
     def enable_flip(self):
         """
         Enable video flipping and restart the FFMPEG process.
@@ -254,7 +245,6 @@ class FFMPEG():
             self.command = self._ffmpeg_command_builder("hflip,vflip")
             self.is_flipped = True
             self.restart()
-
 
     def disable_flip(self):
         """

@@ -1,22 +1,27 @@
 """
 LSC Indoor Camera Proxy v1.0
 
-This script establishes a connection to an indoor camera using the TUTK framework.
+This script establishes a connection to an indoor camera using the TUTK
+framework.
 It handles the reception of audio
 and video streams, manages the RTSP server, and interacts with other services
 such as FFMPEG and MQTT. The script takes a unique identifier (UID)
-for the camera as a command-line argument and reads configuration settings from a
+for the camera as a command-line argument and reads configuration settings
+from a
 "settings.yaml" file.
 
 Usage:
     ./main.py UID
 
 Functions:
-    - receive_audio(tutk): Continuously receives audio data from the TUTK framework
+    - receive_audio(tutk): Continuously receives audio data from the
+      TUTK framework
       and writes it to the audio FIFO file.
-    - receive_video(tutk): Continuously receives video data from the TUTK framework
+    - receive_video(tutk): Continuously receives video data from the
+       TUTK framework
       and writes it to the video FIFO file.
-    - clean_buffers(tutk): Periodically cleans video and audio buffers in the TUTK framework.
+    - clean_buffers(tutk): Periodically cleans video and audio buffers in the
+      TUTK framework.
     - thread_connect_ccr(tutk, mqtt_enabled, mqtt_username, mqtt_password,
       mqtt_hostname, mqtt_port, av_username, av_password):
         Connects to the camera, starts video and audio streams,
@@ -27,7 +32,8 @@ Main:
     - Creates FIFO files for audio and video streams.
     - Initializes TUTK framework and establishes a connection to the camera.
     - Enters the main loop to manage camera streams and associated threads.
-    - Gracefully shuts down on KeyboardInterrupt, closing all connections and stopping threads.
+    - Gracefully shuts down on KeyboardInterrupt, closing all connections and
+      stopping threads.
 
 Author:
     Berobloom
@@ -51,10 +57,10 @@ from mqtt import LscMqttClient
 from tutk import Tutk
 
 
-
 def receive_audio(tutk):
     """
-    Continuously receives audio data from the TUTK framework and writes it to the audio FIFO file.
+    Continuously receives audio data from the TUTK framework and writes it
+    to the audio FIFO file.
 
     Args:
         tutk (Tutk): The TUTK framework instance.
@@ -114,7 +120,8 @@ def receive_audio(tutk):
 
 def receive_video(tutk):
     """
-    Continuously receives video data from the TUTK framework and writes it to the video FIFO file.
+    Continuously receives video data from the TUTK framework and writes it to
+    the video FIFO file.
 
     Args:
         tutk (Tutk): The TUTK framework instance.
@@ -160,6 +167,7 @@ def receive_video(tutk):
                 print(f"video_playback::write , ret=[{status}]")
         except BrokenPipeError:
             os.close(video_pipe_fd)
+            # make this line shorter
             fifo_file = pathlib.Path().absolute() / Tutk.settings["VIDEO_FIFO_PATH"]
             video_pipe_fd = os.open(fifo_file, os.O_WRONLY)
             if video_pipe_fd == -1:
@@ -168,7 +176,6 @@ def receive_video(tutk):
                 print("OK open video_fifo file")
             usleep(10000)
             continue
-
 
     # Close unused pipe ends
     os.close(video_pipe_fd)
@@ -194,7 +201,7 @@ def clean_buffers(tutk):
 
 
 def thread_connect_ccr(tutk, mqtt_enabled, mqtt_username,
-                           mqtt_password, mqtt_hostname, mqtt_port, av_username, av_password):
+                       mqtt_password, mqtt_hostname, mqtt_port, av_username, av_password):
     """
     Connects to the camera, starts video and audio streams,
     initializes RTSP server, initializes MQTT client.
@@ -254,7 +261,7 @@ def thread_connect_ccr(tutk, mqtt_enabled, mqtt_username,
             print("Starting MQTT...")
 
             lsc_mqtt_client = LscMqttClient(tutk, mqtt_username, mqtt_password,
-                                                  mqtt_hostname, mqtt_port, ffmpeg)
+                                            mqtt_hostname, mqtt_port, ffmpeg)
             lsc_mqtt_client_thread = threading.Thread(target=lsc_mqtt_client.start)
             lsc_mqtt_client_thread.daemon = True
             lsc_mqtt_client_thread.start()
@@ -264,6 +271,7 @@ def thread_connect_ccr(tutk, mqtt_enabled, mqtt_username,
 
         rtsp_server.stop()
         ffmpeg.stop()
+
 
 def print_ascii_title():
     # pylint: disable=W1401
@@ -328,7 +336,7 @@ if __name__ == "__main__":
     tutk_framework.iotc_initialize2(0)
     tutk_framework.av_initialize(2)
 
-    ### Connect to the camera ###########
+    # Connect to the camera
     try:
         print_ascii_title()
         print("-Version: 1.0-\n")
@@ -339,7 +347,6 @@ if __name__ == "__main__":
         tutk_framework.graceful_shutdown = True
         print("You pressed Ctrl+C!")
         print("Gracefully shutting down")
-    #####################################
 
     tutk_framework.av_client_stop()
     tutk_framework.iotc_session_close()

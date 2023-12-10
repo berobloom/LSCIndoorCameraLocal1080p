@@ -60,13 +60,13 @@ class Sensor:
             "command_topic": f"{self._command_topic}",
             "icon": f"{icon}",
             "unique_id": f"{self._safe_name}{device_type}02LSC02",
-            "device":{
+            "device": {
                 "identifiers": [
-                "02LSC02"
+                    "02LSC02"
                 ],
                 "manufacturer": "LSC",
                 "model": "LSC Smart Connect Indoor Camera",
-                "name":"LSC Indoor Camera"
+                "name": "LSC Indoor Camera"
             }
         }
         if device_type == "switch":
@@ -76,7 +76,6 @@ class Sensor:
                 "ON": True,
                 "OFF": False,
             }
-
 
     def handle_data(self, payload):
         """
@@ -97,7 +96,6 @@ class Sensor:
                     self.save_state()
                     break
 
-
     def _toggle_switch(self, enable):
         """
         Toggles the switch based on the given enable state.
@@ -116,7 +114,6 @@ class Sensor:
             else:
                 # Define this as a method in the subclass
                 pass
-
 
     def save_state(self):
         """
@@ -140,7 +137,6 @@ class Sensor:
             f = open(file, "w", encoding="utf-8")
             f.write(self._state_payload)
             f.close()
-
 
     def read_last_state(self):
         """
@@ -168,7 +164,6 @@ class Sensor:
                 if contents == "OFF":
                     self._toggle_switch(False)
                 self._state_payload = contents
-
 
     @property
     def command_topic(self):
