@@ -40,7 +40,7 @@ Author:
 Version:
     1.0
 """
-# pylint: disable=W0621, E0401
+
 import time
 import os
 import sys
@@ -273,7 +273,6 @@ def thread_connect_ccr(tutk, mqtt_enabled, mqtt_username,
 
 
 def print_ascii_title():
-    # pylint: disable=W1401
     """
     Prints the ASCII title.
     """

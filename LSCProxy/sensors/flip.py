@@ -1,4 +1,6 @@
-# pylint: disable=C0114, E0401
+"""
+Defines the Flip sensor class.
+"""
 from sensor import Sensor
 
 
