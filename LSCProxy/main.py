@@ -89,16 +89,16 @@ def receive_audio(tutk):
 
         status = tutk.av_recv_audio_data(buf, constants.settings["AUDIO_BUF_SIZE"])
 
-        if status == constants.error["AV_ER_SESSION_CLOSE_BY_REMOTE"]:
+        if status == constants.av_error["AV_ER_SESSION_CLOSE_BY_REMOTE"]:
             print("[thread_ReceiveAudio] AV_ER_SESSION_CLOSE_BY_REMOTE")
             break
-        if status == constants.error["AV_ER_REMOTE_TIMEOUT_DISCONNECT"]:
+        if status == constants.av_error["AV_ER_REMOTE_TIMEOUT_DISCONNECT"]:
             print("[thread_ReceiveAudio] AV_ER_REMOTE_TIMEOUT_DISCONNECT")
             break
-        if status == constants.error["IOTC_ER_INVALID_SID"]:
+        if status == constants.iotc_error["IOTC_ER_INVALID_SID"]:
             print("[thread_ReceiveAudio] Session cant be used anymore")
             break
-        if status == constants.error["AV_ER_LOSED_THIS_FRAME"]:
+        if status == constants.av_error["AV_ER_LOSED_THIS_FRAME"]:
             continue
 
         if tutk.graceful_shutdown:
@@ -144,16 +144,16 @@ def receive_video(tutk):
     while True:
         status = tutk.av_recv_framedata2(buf, constants.settings["VIDEO_BUF_SIZE"])
 
-        if status == constants.error["AV_ER_DATA_NOREADY"]:
+        if status == constants.av_error["AV_ER_DATA_NOREADY"]:
             usleep(10000)
             continue
-        if status == constants.error["AV_ER_SESSION_CLOSE_BY_REMOTE"]:
+        if status == constants.av_error["AV_ER_SESSION_CLOSE_BY_REMOTE"]:
             print("[thread_ReceiveVideo] AV_ER_SESSION_CLOSE_BY_REMOTE")
             break
-        if status == constants.error["AV_ER_REMOTE_TIMEOUT_DISCONNECT"]:
+        if status == constants.av_error["AV_ER_REMOTE_TIMEOUT_DISCONNECT"]:
             print("[thread_ReceiveVideo] AV_ER_REMOTE_TIMEOUT_DISCONNECT")
             break
-        if status == constants.error["IOTC_ER_INVALID_SID"]:
+        if status == constants.iotc_error["IOTC_ER_INVALID_SID"]:
             print("[thread_ReceiveVideo] Session can't be used anymore")
             break
 

@@ -1,14 +1,16 @@
 """
-Constants used in the LSCProxy module.
+Constants used in the LSCProxy project.
 """
-
 import pathlib
 
-error = {
+av_error = {
     "AV_ER_DATA_NOREADY": -20012,
     "AV_ER_LOSED_THIS_FRAME": -20014,
     "AV_ER_SESSION_CLOSE_BY_REMOTE": -20015,
     "AV_ER_REMOTE_TIMEOUT_DISCONNECT": -20016,
+}
+
+iotc_error = {
     "IOTC_ER_INVALID_SID": -14
 }
 

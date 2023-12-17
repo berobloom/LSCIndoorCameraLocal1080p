@@ -43,6 +43,7 @@ import os
 import sys
 import pathlib
 import constants
+import msghandler
 
 
 # IOCTRL structs
@@ -100,7 +101,7 @@ class Tutk():
     the camera through IOCTRL commands.
 
     Attributes:
-        error_constants (dict): Dictionary of TUTK error constants.
+        error_constants (dict): Dictionary of TUTK error msghandler.
         settings (dict): Dictionary of TUTK settings.
         ioctrl (dict): Dictionary of TUTK IOCTRL commands.
 
@@ -256,7 +257,7 @@ class Tutk():
         io_nightvision.channel = 1
         io_nightvision.mode = 1
 
-        # get constants from constants.py
+        # get constants from msghandler.py
         status = self.av_send_ioctrl(constants.ioctrl["IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ"], io_nightvision)
 
         return status
@@ -424,6 +425,7 @@ class Tutk():
         status = self._iot.IOTC_Initialize2(num)
         if status != 0:
             print("IOTCAPIs_Device exit...!!")
+            msghandler.parse_error_number(status)
             sys.exit(1)
 
     def iotc_connect_by_uid_parallel(self):
