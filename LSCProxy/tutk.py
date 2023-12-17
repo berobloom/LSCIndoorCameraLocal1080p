@@ -258,7 +258,8 @@ class Tutk():
         io_nightvision.mode = 1
 
         # get constants from msghandler.py
-        status = self.av_send_ioctrl(constants.ioctrl["IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ"], io_nightvision)
+        status = self.av_send_ioctrl(
+            constants.ioctrl["IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ"], io_nightvision)
 
         return status
 
@@ -274,7 +275,8 @@ class Tutk():
         io_nightvision.channel = 0
         io_nightvision.mode = 0
 
-        status = self.av_send_ioctrl(constants.ioctrl["IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ"], io_nightvision)
+        status = self.av_send_ioctrl(
+            constants.ioctrl["IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ"], io_nightvision)
 
         return status
 
@@ -290,7 +292,8 @@ class Tutk():
         io_quality.channel = 0
         io_quality.quality = 2
 
-        status = self.av_send_ioctrl(constants.ioctrl["IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ"], io_quality)
+        status = self.av_send_ioctrl(
+            constants.ioctrl["IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ"], io_quality)
 
         return status
 
