@@ -45,7 +45,6 @@ import time
 import os
 import sys
 import threading
-import pathlib
 import yaml
 from services import (
     FFMPEG,
@@ -72,7 +71,7 @@ def receive_audio(tutk):
     buf = tutk.create_buf(constants.settings["AUDIO_BUF_SIZE"])
 
     print("Start IPCAM audio stream...")
-    fifo_file = pathlib.Path().absolute() / constants.settings["AUDIO_FIFO_PATH"]
+    fifo_file = constants.settings["AUDIO_FIFO_PATH"]
     audio_pipe_fd = os.open(fifo_file, os.O_WRONLY)
     if audio_pipe_fd == -1:
         print("Cannot open audio_fifo file")
@@ -132,7 +131,7 @@ def receive_video(tutk):
 
     print("Start IPCAM video stream...")
 
-    fifo_file = pathlib.Path().absolute() / constants.settings["VIDEO_FIFO_PATH"]
+    fifo_file = constants.settings["VIDEO_FIFO_PATH"]
     video_pipe_fd = os.open(fifo_file, os.O_WRONLY)
     if video_pipe_fd == -1:
         print("Cannot open video_fifo file")
@@ -168,7 +167,7 @@ def receive_video(tutk):
         except BrokenPipeError:
             os.close(video_pipe_fd)
             # make this line shorter
-            fifo_file = pathlib.Path().absolute() / constants.settings["VIDEO_FIFO_PATH"]
+            fifo_file = constants.settings["VIDEO_FIFO_PATH"]
             video_pipe_fd = os.open(fifo_file, os.O_WRONLY)
             if video_pipe_fd == -1:
                 print("Cannot open video_fifo file")
@@ -296,7 +295,7 @@ if __name__ == "__main__":
 
     uid = sys.argv[1]
 
-    settings_yaml_file = pathlib.Path().absolute() / "settings.yaml"
+    settings_yaml_file = constants.settings["SETTINGS_PATH"]
     try:
         with open(settings_yaml_file, 'r', encoding='utf-8') as file:
             data = yaml.safe_load(file)
@@ -315,9 +314,9 @@ if __name__ == "__main__":
         print(f"Error: Required key not found: {e}")
         sys.exit(1)
 
-    fifos_dir = pathlib.Path().absolute() / constants.settings["FIFOS_DIR"]
-    audio_fifo_file = pathlib.Path().absolute() / constants.settings["AUDIO_FIFO_PATH"]
-    video_fifo_file = pathlib.Path().absolute() / constants.settings["VIDEO_FIFO_PATH"]
+    fifos_dir = constants.settings["FIFOS_DIR"]
+    audio_fifo_file = constants.settings["AUDIO_FIFO_PATH"]
+    video_fifo_file = constants.settings["VIDEO_FIFO_PATH"]
 
     if not fifos_dir.exists():
         fifos_dir.mkdir(parents=True, exist_ok=True)

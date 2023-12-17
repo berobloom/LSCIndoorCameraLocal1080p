@@ -15,10 +15,11 @@ iotc_error = {
 }
 
 settings = {
-    "FIFOS_DIR": "fifos",
+    "FIFOS_DIR": pathlib.Path().absolute() / "fifos",
     "AUDIO_FIFO_PATH": pathlib.Path().absolute() / "fifos/audio_fifo",
     "VIDEO_FIFO_PATH": pathlib.Path().absolute() / "fifos/video_fifo",
     "MEDIAMTX_PATH": pathlib.Path().absolute() / "rtsp/mediamtx",
+    "SETTINGS_PATH": pathlib.Path().absolute() / "settings.yaml",
     "AUDIO_BUF_SIZE": 512,
     "VIDEO_BUF_SIZE": 64000
 }
