@@ -36,9 +36,6 @@ Main:
 
 Author:
     Berobloom
-
-Version:
-    1.0
 """
 
 import time
@@ -337,7 +334,6 @@ if __name__ == "__main__":
     # Connect to the camera
     try:
         print_ascii_title()
-        print("-Version: 1.0-\n")
 
         thread_connect_ccr(tutk_framework, mqtt_enabled, mqtt_username,
                            mqtt_password, mqtt_hostname, mqtt_port, av_username, av_password)
@@ -350,4 +346,4 @@ if __name__ == "__main__":
     tutk_framework.iotc_session_close()
     tutk_framework.iotc_de_initialize()
 
-    print("\nLSC Indoor Camera Proxy v1.0. Shutted down.")
+    print("\nLSC Indoor Camera Proxy. Shutted down.")
