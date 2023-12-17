@@ -23,15 +23,11 @@ Note:
 """
 
 import subprocess
-import pathlib
 import signal
 import sys
 import os
 import threading
-
-AUDIO_FIFO_PATH = pathlib.Path().absolute() / "fifos/audio_fifo"
-VIDEO_FIFO_PATH = pathlib.Path().absolute() / "fifos/video_fifo"
-MEDIAMTX_PATH = pathlib.Path().absolute() / "rtsp/mediamtx"
+import constants
 
 
 class Process():
@@ -118,7 +114,7 @@ class RTSPServer():
 
     def __init__(self):
         self.name = "mediamtx"
-        self.command = [MEDIAMTX_PATH, "rtsp/mediamtx.yml"]
+        self.command = [constants.settings["MEDIAMTX_PATH"], "rtsp/mediamtx.yml"]
         self.process = Process(self)
 
     def start(self):
@@ -167,9 +163,9 @@ class FFMPEG():
         command = [
             "ffmpeg", "-re", "-hide_banner",
             "-thread_queue_size", "4096", "-f", "s16le", "-ar", "8000", "-ac", "1", "-i",
-            AUDIO_FIFO_PATH,
+            constants.settings["AUDIO_FIFO_PATH"],
             "-thread_queue_size", "4096", "-f", "h264", "-i",
-            VIDEO_FIFO_PATH,
+            constants.settings["VIDEO_FIFO_PATH"],
         ]
 
         if video_filter is not None:

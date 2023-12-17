@@ -54,6 +54,7 @@ from services import (
 from utils import usleep
 from mqtt import LscMqttClient
 from tutk import Tutk
+import constants
 
 
 def receive_audio(tutk):
@@ -68,10 +69,10 @@ def receive_audio(tutk):
         None
     """
 
-    buf = tutk.create_buf(Tutk.settings["AUDIO_BUF_SIZE"])
+    buf = tutk.create_buf(constants.settings["AUDIO_BUF_SIZE"])
 
     print("Start IPCAM audio stream...")
-    fifo_file = pathlib.Path().absolute() / Tutk.settings["AUDIO_FIFO_PATH"]
+    fifo_file = pathlib.Path().absolute() / constants.settings["AUDIO_FIFO_PATH"]
     audio_pipe_fd = os.open(fifo_file, os.O_WRONLY)
     if audio_pipe_fd == -1:
         print("Cannot open audio_fifo file")
@@ -86,18 +87,18 @@ def receive_audio(tutk):
             usleep(10000)
             continue
 
-        status = tutk.av_recv_audio_data(buf, Tutk.settings["AUDIO_BUF_SIZE"])
+        status = tutk.av_recv_audio_data(buf, constants.settings["AUDIO_BUF_SIZE"])
 
-        if status == Tutk.error_constants["AV_ER_SESSION_CLOSE_BY_REMOTE"]:
+        if status == constants.error["AV_ER_SESSION_CLOSE_BY_REMOTE"]:
             print("[thread_ReceiveAudio] AV_ER_SESSION_CLOSE_BY_REMOTE")
             break
-        if status == Tutk.error_constants["AV_ER_REMOTE_TIMEOUT_DISCONNECT"]:
+        if status == constants.error["AV_ER_REMOTE_TIMEOUT_DISCONNECT"]:
             print("[thread_ReceiveAudio] AV_ER_REMOTE_TIMEOUT_DISCONNECT")
             break
-        if status == Tutk.error_constants["IOTC_ER_INVALID_SID"]:
+        if status == constants.error["IOTC_ER_INVALID_SID"]:
             print("[thread_ReceiveAudio] Session cant be used anymore")
             break
-        if status == Tutk.error_constants["AV_ER_LOSED_THIS_FRAME"]:
+        if status == constants.error["AV_ER_LOSED_THIS_FRAME"]:
             continue
 
         if tutk.graceful_shutdown:
@@ -131,28 +132,28 @@ def receive_video(tutk):
 
     print("Start IPCAM video stream...")
 
-    fifo_file = pathlib.Path().absolute() / Tutk.settings["VIDEO_FIFO_PATH"]
+    fifo_file = pathlib.Path().absolute() / constants.settings["VIDEO_FIFO_PATH"]
     video_pipe_fd = os.open(fifo_file, os.O_WRONLY)
     if video_pipe_fd == -1:
         print("Cannot open video_fifo file")
     else:
         print("OK open video_fifo file")
 
-    buf = tutk.create_buf(Tutk.settings["VIDEO_BUF_SIZE"])
+    buf = tutk.create_buf(constants.settings["VIDEO_BUF_SIZE"])
 
     while True:
-        status = tutk.av_recv_framedata2(buf, Tutk.settings["VIDEO_BUF_SIZE"])
+        status = tutk.av_recv_framedata2(buf, constants.settings["VIDEO_BUF_SIZE"])
 
-        if status == Tutk.error_constants["AV_ER_DATA_NOREADY"]:
+        if status == constants.error["AV_ER_DATA_NOREADY"]:
             usleep(10000)
             continue
-        if status == Tutk.error_constants["AV_ER_SESSION_CLOSE_BY_REMOTE"]:
+        if status == constants.error["AV_ER_SESSION_CLOSE_BY_REMOTE"]:
             print("[thread_ReceiveVideo] AV_ER_SESSION_CLOSE_BY_REMOTE")
             break
-        if status == Tutk.error_constants["AV_ER_REMOTE_TIMEOUT_DISCONNECT"]:
+        if status == constants.error["AV_ER_REMOTE_TIMEOUT_DISCONNECT"]:
             print("[thread_ReceiveVideo] AV_ER_REMOTE_TIMEOUT_DISCONNECT")
             break
-        if status == Tutk.error_constants["IOTC_ER_INVALID_SID"]:
+        if status == constants.error["IOTC_ER_INVALID_SID"]:
             print("[thread_ReceiveVideo] Session can't be used anymore")
             break
 
@@ -167,7 +168,7 @@ def receive_video(tutk):
         except BrokenPipeError:
             os.close(video_pipe_fd)
             # make this line shorter
-            fifo_file = pathlib.Path().absolute() / Tutk.settings["VIDEO_FIFO_PATH"]
+            fifo_file = pathlib.Path().absolute() / constants.settings["VIDEO_FIFO_PATH"]
             video_pipe_fd = os.open(fifo_file, os.O_WRONLY)
             if video_pipe_fd == -1:
                 print("Cannot open video_fifo file")
@@ -314,9 +315,9 @@ if __name__ == "__main__":
         print(f"Error: Required key not found: {e}")
         sys.exit(1)
 
-    fifos_dir = pathlib.Path().absolute() / Tutk.settings["FIFOS_DIR"]
-    audio_fifo_file = pathlib.Path().absolute() / Tutk.settings["AUDIO_FIFO_PATH"]
-    video_fifo_file = pathlib.Path().absolute() / Tutk.settings["VIDEO_FIFO_PATH"]
+    fifos_dir = pathlib.Path().absolute() / constants.settings["FIFOS_DIR"]
+    audio_fifo_file = pathlib.Path().absolute() / constants.settings["AUDIO_FIFO_PATH"]
+    video_fifo_file = pathlib.Path().absolute() / constants.settings["VIDEO_FIFO_PATH"]
 
     if not fifos_dir.exists():
         fifos_dir.mkdir(parents=True, exist_ok=True)

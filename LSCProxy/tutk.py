@@ -42,13 +42,7 @@ import ctypes
 import os
 import sys
 import pathlib
-
-# IOCTRL constants
-IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ = 0x5000
-IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ = 0x0320
-IOTYPE_USER_IPCAM_START = 0x01FF
-IOTYPE_USER_IPCAM_STOP = 0x02FF
-IOTYPE_USER_IPCAM_AUDIOSTART = 0x0300
+import constants
 
 
 # IOCTRL structs
@@ -137,29 +131,6 @@ class Tutk():
         av_recv_audio_data(self, buf, buf_size): Receives audio data into the provided buffer.
         av_check_audio_buf(self): Checks the availability of audio data in the buffer.
     """
-
-    error_constants = {
-        "AV_ER_DATA_NOREADY": -20012,
-        "AV_ER_LOSED_THIS_FRAME": -20014,
-        "AV_ER_SESSION_CLOSE_BY_REMOTE": -20015,
-        "AV_ER_REMOTE_TIMEOUT_DISCONNECT": -20016,
-        "IOTC_ER_INVALID_SID": -14
-    }
-
-    settings = {
-        "FIFOS_DIR": "fifos",
-        "AUDIO_FIFO_PATH": "fifos/audio_fifo",
-        "VIDEO_FIFO_PATH": "fifos/video_fifo",
-        "AUDIO_BUF_SIZE": 512,
-        "VIDEO_BUF_SIZE": 64000
-    }
-
-    ioctrl = {
-        "IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ": 0x5000,
-        "IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ": 0x0320,
-        "IOTYPE_USER_IPCAM_START": 0x01FF,
-        "IOTYPE_USER_IPCAM_AUDIOSTART": 0x0300
-    }
 
     def __init__(self, uid):
         self.graceful_shutdown = False
@@ -285,7 +256,8 @@ class Tutk():
         io_nightvision.channel = 1
         io_nightvision.mode = 1
 
-        status = self.av_send_ioctrl(IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ, io_nightvision)
+        # get constants from constants.py
+        status = self.av_send_ioctrl(constants.ioctrl["IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ"], io_nightvision)
 
         return status
 
@@ -301,7 +273,7 @@ class Tutk():
         io_nightvision.channel = 0
         io_nightvision.mode = 0
 
-        status = self.av_send_ioctrl(IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ, io_nightvision)
+        status = self.av_send_ioctrl(constants.ioctrl["IOTYPE_USER_IPCAM_SETGRAY_MODE_REQ"], io_nightvision)
 
         return status
 
@@ -317,7 +289,7 @@ class Tutk():
         io_quality.channel = 0
         io_quality.quality = 2
 
-        status = self.av_send_ioctrl(IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ, io_quality)
+        status = self.av_send_ioctrl(constants.ioctrl["IOTYPE_USER_IPCAM_SETSTREAMCTRL_REQ"], io_quality)
 
         return status
 
@@ -334,7 +306,7 @@ class Tutk():
         io_camera = SMsgAVIoctrlAVStream()
         io_camera.channel = 1
 
-        status = self.av_send_ioctrl(IOTYPE_USER_IPCAM_START, io_camera)
+        status = self.av_send_ioctrl(constants.ioctrl["IOTYPE_USER_IPCAM_START"], io_camera)
 
         return status
 
@@ -349,7 +321,7 @@ class Tutk():
         io_camera = SMsgAVIoctrlAVStream()
         io_camera.channel = 1
 
-        status = self.av_send_ioctrl(IOTYPE_USER_IPCAM_STOP, io_camera)
+        status = self.av_send_ioctrl(constants.ioctrl["IOTYPE_USER_IPCAM_STOP"], io_camera)
 
         return status
 
@@ -364,7 +336,7 @@ class Tutk():
         io_audio = SMsgAVIoctrlAVStream()
         io_audio.channel = 1
 
-        status = self.av_send_ioctrl(IOTYPE_USER_IPCAM_AUDIOSTART, io_audio)
+        status = self.av_send_ioctrl(constants.ioctrl["IOTYPE_USER_IPCAM_AUDIOSTART"], io_audio)
 
         return status
 
