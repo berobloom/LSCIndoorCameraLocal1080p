@@ -48,7 +48,7 @@ class LscMqttClient():
         keepalive = 60
         self._client.connect(self._hostname, self._port, keepalive)
 
-        # Add sensors here ###
+        # Add sensors here
         nightvision = Nightvision("Night vision",
                                   "switch", "mdi:light-flood-down", self._tutk, ffmpeg_process)
         private = Private("Private", "switch", "mdi:eye-off", self._tutk, ffmpeg_process)
