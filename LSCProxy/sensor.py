@@ -1,4 +1,8 @@
-# pylint: disable=W0702, C0114
+"""
+Sensor Class.
+"""
+
+
 class Sensor:
     """
     Sensor Class.

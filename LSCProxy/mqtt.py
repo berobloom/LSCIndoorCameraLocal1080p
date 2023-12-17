@@ -1,4 +1,6 @@
-# pylint: disable=E0401, W0612, W0613, C0114
+"""
+MQTT Client Class.
+"""
 import os
 import time
 import json

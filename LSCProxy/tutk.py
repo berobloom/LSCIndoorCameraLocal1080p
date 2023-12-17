@@ -37,7 +37,6 @@ Author:
     Berobloom
 """
 
-# pylint: disable=R0903, R0902, W0201
 import ctypes
 import os
 import sys
