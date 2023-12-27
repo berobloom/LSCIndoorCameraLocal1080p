@@ -345,8 +345,8 @@ If the camera is constantly rebooting, check the following:
 
 The following credentials are set as default:
 
-username: "defusr"
-password: "defpwd"
+* username: `defusr`
+* password: `defpwd`
 
 To generate new credentials, open a browser and go to: `http://<your_camera_ip>/cgi-bin/resetpass.cgi`
 
