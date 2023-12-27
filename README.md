@@ -45,8 +45,8 @@ The camera has the following hardcoded settings, but the root password can be ch
 * Root password: `dgiot010`
 * p2p UID: `DGIOTDEV<mac_adres>`
   * For example: `DGIOTDEVA1B1C1D1E1A1`
-* p2p user: `admin`
-* p2p password: `123456`
+* p2p user: `defusr`
+* p2p password: `defpwd`
 
 ## Prerequisites
 
@@ -198,7 +198,9 @@ In my setup the squashfs starts at block `2490368`. We need this number when rec
 
 ### 7. Patch dgiot application
 
-There is a motion detector running in the background. It will output if there is some motion going on. Normally the tuya stack takes care of this motion. We can patch this out.
+1. There is a motion detector running in the background. It will output if there is some motion going on. Normally the tuya stack takes care of this motion. We can patch this out.
+
+2. TUTK credentials are hardcoded inside the application binary. A patch has been added so that credentials can be changed.
 
 Check the sha256sum of: `_fulldump.bin.extracted/squashfs-root/usr/bin/dgiot`:
 
@@ -339,33 +341,44 @@ If the camera is constantly rebooting, check the following:
 * `stationssid` and `stationpwd` in product.cof
 * If `SKIP_TIME` is set to `false` make sure that the camera has WiFi access and you have entered a reachable timeserver. You can change time settings in the `env` file on the MicroSD card.
 
-### 12. Usage method 1: TinyCam
+### 12. Change TUTK credentials
+
+The following credentials are set as default:
+
+username: "defusr"
+password: "defpwd"
+
+To generate new credentials, open a browser and go to: `http://<your_camera_ip>/cgi-bin/resetpass.cgi`
+
+It will return the new credentials and reboot the camera.
+
+### 13. Usage method 1: TinyCam
 
 Install TinyCam on an Android device or use Android X86 to install TinyCam
 
-When adding a camera, select the `Scan network` option and if the Android device and the camera are on the same network, the UID shall pop up automatically. Add the camera and use the password: `123456`.
+When adding a camera, select the `Scan network` option and if the Android device and the camera are on the same network, the UID shall pop up automatically. Add the camera and use the username: `defusr` and password: `defpwd`. If you have generated a new one in `Step 12` enter them instead.
 
 TinyCam can be used to restream. The Android device will then act as an NVR.
 
-### 13: Usage method 2: Standalone (Work In Progress)
+### 14: Usage method 2: Standalone (Work In Progress)
 
 Another method is a standalone proxy that will read streams from the camera using the tutk client library and resend them using rtsp. Prebuild files for this proxy can be found in: `LSCProxy` folder.
 
 You can run it with: `python3 main.py <UID>`
-Make sure to set `AV_USERNAME` and `AV_PASSWORD`
+Make sure to set `AV_USERNAME` and `AV_PASSWORD`. To generate new credentials see `Step 12`.
 
 Current requirements:
 
 * Linux (amd64)
 * Python
-* Default camera credentials
-  * p2p user: `admin`
-  * p2p password: `123456`
+* Camera credentials
+  * p2p user: `<username>`
+  * p2p password: `<password>`
   * UID as environment variable
 * FFmpeg
 * Mediamtx (Included) https://github.com/bluenviron/mediamtx
 
-### 14. End
+### 15. End
 
 Congratulations! You have modified the LSC Indoor Camera 1080P.
 
@@ -390,9 +403,10 @@ Reboot the camera after changing settings in `product.cof`.
 ## Things to do
 
 * ~~Write a custom p2p TUTK client with an RTSP Server~~ [Done]
-* Patch the application binary to set up credentials dynamically
+* ~~Patch the application binary to set up credentials dynamically~~ [Done]
 * ~~Write API for TUTK managed nightvision~~ [Done, using MQTT]
 * ~~Patching out internal motion detection~~ [Done]
+* Add instructions to change root password
 
 ## Contribute
 

@@ -38,6 +38,13 @@ else
     reboot_proc "Could not find sd card"
 fi
 
+# Check if dgiot exists
+if [[ ! -f "${SDCARD_DIR}/dgiot" ]]
+then
+    cp /usr/bin/dgiot "${SDCARD_DIR}/dgiot"
+    sync
+fi
+
 # Check for product.cof
 echo "Check for ${SDCARD_DIR}/product.cof..."
 if [[ ! -f "${SDCARD_DIR}/product.cof" ]]
@@ -118,7 +125,7 @@ fi
 
 # Start the main application
 echo "Start main application..."
-cd /usr/bin
+cd /mnt
 ./dgiot&
 
 sleep 30

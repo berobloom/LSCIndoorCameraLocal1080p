@@ -6,5 +6,5 @@ homeassistant_credentials:
   mqtt_port: 1883
 
 tutk_credentials:
-  av_username: "admin"
-  av_password: "123456"
+  av_username: "defusr"
+  av_password: "defpwd"
