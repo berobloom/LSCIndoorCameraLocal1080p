@@ -226,10 +226,10 @@ or
 
 Copy the patched application:
 
-* Create: `MicroSD card/base_app` directory.
+* Create: `MicroSD card/base_app` directory
 
-* Move `_fulldump.bin.extracted/squashfs-root/usr/bin/dgiot` to: `MicroSD card/base_app`.
-  * *Note: Do not delete this file. It will be used to reset credentials.*
+* Move `_fulldump.bin.extracted/squashfs-root/usr/bin/dgiot` to: `MicroSD card/base_app`
+  * *Note: Do not delete this file. It will be used to reset credentials*
 
 * Create a symlink: `ln -s /mnt/dgiot _fulldump.bin.extracted/squashfs-root/usr/bin/dgiot`
 
