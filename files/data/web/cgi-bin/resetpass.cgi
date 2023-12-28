@@ -7,9 +7,15 @@ echo
 NEW_USERNAME=$(/mnt/busybox tr -dc 'a-zA-Z0-9' < /dev/urandom | /mnt/busybox head -c 6)
 NEW_PASSWORD=$(/mnt/busybox tr -dc 'a-zA-Z0-9' < /dev/urandom | /mnt/busybox head -c 6)
 
-cp /usr/bin/dgiot /mnt/dgiot_new
-sed -i "s/defusr/${NEW_USERNAME}/g" /mnt/dgiot_new
-sed -i "s/defpwd/${NEW_PASSWORD}/g" /mnt/dgiot_new
+cd /mnt
+rm -f dgiot_new
+sync
+
+cp base_app/dgiot dgiot_new
+sync
+sed -i "s/defusr/${NEW_USERNAME}/g" dgiot_new
+sed -i "s/defpwd/${NEW_PASSWORD}/g" dgiot_new
+sync
 
 echo "<html>"
 echo "<head>"
@@ -26,6 +32,6 @@ echo "<p>Rebooting camera to apply changes...</p>"
 echo "</body>"
 echo "</html>"
 
-mv /mnt/dgiot_new /mnt/dgiot
+mv dgiot_new dgiot
 sync
 reboot
