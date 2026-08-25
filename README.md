@@ -1,7 +1,6 @@
 # LSC Indoor Camera 1080P Local Patch
 
-This project works for the 2021 Fullhan variant of the Camera
-A new project for the 2025 Anyka variant has been set up here: https://github.com/berobloom/LSC-1080p-Anyka-Decloud
+This project works for the 2021 Fullhan variant of the Camera. A new project for the 2025 Anyka variant has been set up here: https://github.com/berobloom/LSC-1080p-Anyka-Decloud
 
 ## Project description
 
