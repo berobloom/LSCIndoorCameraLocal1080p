@@ -1,5 +1,8 @@
 # LSC Indoor Camera 1080P Local Patch
 
+This project works for the 2021 Fullhan variant of the Camera
+A new project for the 2025 Anyka variant has been set up here: https://github.com/berobloom/LSC-1080p-Anyka-Decloud
+
 ## Project description
 
 This repository contains methods to make the LSC Indoor Camera 1080p work locally. By adjusting the settings correctly, you can make the camera run a small p2p TUTK server instead of the tuya stack which requires you to use their cloud solution.
