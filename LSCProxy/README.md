@@ -55,8 +55,5 @@ python main.py <UID>
 
 ## License
 
-This software is released under the [BOLA License](LICENSE).
-
-## Sources
-
-* https://github.com/ErikMcClure/bad-licenses/blob/master/BOLA-License
+GPL-3.0-or-later, with an additional permission for the TUTK library: see the
+License section of the [project README](../README.md) and [LICENSE](../LICENSE).

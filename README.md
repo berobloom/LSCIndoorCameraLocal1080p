@@ -429,7 +429,21 @@ Let me know if there are any improvements or other ideas. They are very welcome.
 
 ## License
 
-This software is released under the [BOLA License](LICENSE).
+Copyright (C) 2023-2026 Berobloom
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version. It comes WITHOUT ANY WARRANTY. The full text is in [LICENSE](LICENSE).
+
+Additional permission under GNU GPL version 3 section 7: if you modify this
+program, or any covered work, by linking or combining it with ThroughTek's TUTK
+IOTC library (`libIOTCAPIs_ALL.so`, or a modified version of it), the
+copyright holder grants you additional permission to convey the resulting work.
+
+The bundled third-party binaries are not covered by this license and keep their
+own terms: `LSCProxy/libs/x64/libIOTCAPIs_ALL.so` (ThroughTek),
+`LSCProxy/rtsp/mediamtx` (bluenviron/mediamtx) and `files/data/reredirect`.
 
 ## Sources:
 
@@ -438,4 +452,3 @@ This software is released under the [BOLA License](LICENSE).
 3. https://www.sunipcam.com/sdk/UserManual/APIRefGuide/
 4. https://github.com/taishanmayi/tutk_test.git
 5. https://github.com/bluenviron/mediamtx
-6. https://github.com/ErikMcClure/bad-licenses/blob/master/BOLA-License
